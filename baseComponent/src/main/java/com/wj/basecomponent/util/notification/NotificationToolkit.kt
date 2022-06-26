@@ -1,6 +1,5 @@
 package com.wj.basecomponent.util.notification
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -21,8 +20,9 @@ fun sendNotification(
     content: String
 ) {
 
+    WJLog.i()
     val fullScreenIntent = Intent(context, destinationClass)
-    val fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+    val fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE)
     val notificationBuilder = NotificationCompat.Builder(context, channelId)
         .setSmallIcon(iconId)
         .setContentText(content)
@@ -32,6 +32,8 @@ fun sendNotification(
         .setFullScreenIntent(fullScreenPendingIntent, true)
         .setStyle(NotificationCompat.BigTextStyle().bigText(content))
         .setAutoCancel(true)
+        .setOngoing(true)
+        .setShowWhen(true)
     val notification = notificationBuilder.build()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -39,6 +41,7 @@ fun sendNotification(
         val descriptionText = "channel_description"
         val importance = NotificationManager.IMPORTANCE_HIGH
         val channel = NotificationChannel(channelId, name, importance).apply {
+            WJLog.i()
             description = descriptionText
         }
         val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -46,6 +49,7 @@ fun sendNotification(
     }
 
     with(NotificationManagerCompat.from(context)) {
+        WJLog.i()
         notify(notificationId, notification)
 
         WJLog.d("send notification -> $title : $content")

@@ -27,8 +27,8 @@ class BackgroundService : Service() {
         mJob = GlobalScope.launch(Dispatchers.IO) {
             while (mCount < Int.MAX_VALUE) {
                 delay(1000)
-                WJLog.d("$mCount -> % = ${mCount % 5}")
-                if (mCount % 5 == 0) {
+                WJLog.d("$mCount -> % = ${mCount % 15}")
+                if (mCount % 15 == 0) {
                     sendNotification(
                         this@BackgroundService, PhoneConversationActivity::class.java, "WJ:Notification", CONVERSATION_NOTIFICATION_ID,
                         R.mipmap.ic_launcher_round, "TestNotificationTitle", "TestNotificationContent"

@@ -9,7 +9,6 @@ import com.wj.basecomponent.ui.constraint.BaseUI
 import com.wj.basecomponent.util.log.WJLog
 
 abstract class BaseFragment : Fragment(), BaseUI {
-
     /**
      * 是否缓存View
      */

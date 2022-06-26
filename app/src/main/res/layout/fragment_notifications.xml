@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".business.ui.main.fragment.notifications.NotificationsFragment">
 
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/sw_drawOverlays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="在其他应用之上显示"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/text_notifications"
         android:layout_width="match_parent"

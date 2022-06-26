@@ -15,6 +15,17 @@ class WJLog {
             Timber.d(msg)
         }
 
+        fun i(msg: String) {
+            Timber.i(msg)
+        }
+
+        fun i() {
+            val stackTrace = Thread.currentThread().stackTrace
+            if (stackTrace.size > 2) {
+                val parentMethod = stackTrace[2]
+                i("${parentMethod.className}.${parentMethod.methodName}:${parentMethod.lineNumber} -> invoke")
+            }
+        }
 
     }
 
