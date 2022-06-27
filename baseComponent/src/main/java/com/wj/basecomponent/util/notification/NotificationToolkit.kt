@@ -34,6 +34,7 @@ fun sendNotification(
         .setAutoCancel(true)
         .setOngoing(true)
         .setShowWhen(true)
+        .setVibrate(longArrayOf(200, 200, 200, 200))
     val notification = notificationBuilder.build()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

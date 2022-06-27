@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.wj.basecomponent.util.dp2Pixel
 
 class DashboardRecyclerViewAdapter(private val dataList: List<FunctionBean>) :
     RecyclerView.Adapter<DashboardRecyclerViewAdapter.DashboardRecyclerViewHolder>() {
@@ -12,8 +13,7 @@ class DashboardRecyclerViewAdapter(private val dataList: List<FunctionBean>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DashboardRecyclerViewHolder {
         val textView = TextView(parent.context)
-        val lp = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        lp.setMargins(0, 5, 0, 5)
+        val lp = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp2Pixel(parent.context, 45).toInt())
         textView.gravity = Gravity.CENTER
         textView.layoutParams = lp
         return DashboardRecyclerViewHolder(textView)

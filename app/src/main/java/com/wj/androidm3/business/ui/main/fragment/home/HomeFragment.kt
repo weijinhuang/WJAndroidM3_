@@ -10,6 +10,7 @@ class HomeFragment : BaseMVVMFragment<HomeViewModel, FragmentHomeBinding>() {
     override fun firstCreateView() {
         mViewBinding?.viewModel = mViewModel
         mViewModel.getSystemInfo()
+        mViewModel.getDensityInfo(requireActivity())
     }
 
 

@@ -13,11 +13,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.wj.androidm3.BuildConfig
 import com.wj.androidm3.R
 import com.wj.androidm3.business.services.BackgroundService
+import com.wj.androidm3.business.ui.conversationincome.PhoneConversationActivity
 import com.wj.androidm3.databinding.FragmentDashboardBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
+import com.wj.basecomponent.util.notification.sendNotification
 
 class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboardBinding>() {
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -38,6 +39,17 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
             val alertDialog = alertDialogBuilder.create()
             alertDialog.window?.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
             alertDialog.show()
+        },
+        FunctionBean("HeadsUpNotification") {
+            sendNotification(
+                requireActivity(),
+                PhoneConversationActivity::class.java,
+                "HWJ",
+                1,
+                R.mipmap.ic_launcher_round,
+                "Title",
+                "This is a heads up notification"
+            )
         }
     )
 
