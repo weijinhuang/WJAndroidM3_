@@ -5,10 +5,16 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.6.10" apply false
 }
 
+buildscript {
+    dependencies {
+        classpath("com.google.gms:google-services:4.3.12")
+    }
+}
+
 //task clean(type: Delete) {
 //    delete rootProject.buildDir
 //}
-task("clean",Delete::class){
+task("clean", Delete::class) {
     delete(rootProject.buildDir)
     println("----clear build 1----")
 }
