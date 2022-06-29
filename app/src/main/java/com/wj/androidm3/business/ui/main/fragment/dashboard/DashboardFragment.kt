@@ -3,12 +3,16 @@ package com.wj.androidm3.business.ui.main.fragment.dashboard
 import android.content.Intent
 import android.view.WindowManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.api.GoogleApi
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.messaging.FirebaseMessaging
 import com.wj.androidm3.R
 import com.wj.androidm3.business.services.BackgroundService
 import com.wj.androidm3.business.ui.conversationincome.PhoneConversationActivity
 import com.wj.androidm3.databinding.FragmentDashboardBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
+import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.util.notification.sendNotification
 
 class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboardBinding>() {
@@ -43,6 +47,17 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
                 "Title",
                 "This is a heads up notification"
             )
+        },
+        FunctionBean("Get current FCM token") {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    WJLog.e("Get current FCM token false : ${it.exception?.message ?: "error"}")
+                }
+                WJLog.i("current FCM token -> ${it.result}")
+            }
+        },
+        FunctionBean("Install Google Play") {
+            GoogleApiAvailability().makeGooglePlayServicesAvailable(requireActivity())
         }
     )
 

@@ -14,6 +14,9 @@ class WJLog {
         fun d(msg: String) {
             Timber.d(msg)
         }
+        fun e(msg: String) {
+            Timber.e(msg)
+        }
 
         fun i(msg: String) {
             Timber.i(msg)
