@@ -3,6 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="navigationBarColor">@android:color/holo_blue_dark</color>
-    <color name="statusBarColor">@android:color/holo_blue_dark</color>
+    <color name="navigationBarColor">@android:color/holo_green_dark</color>
+    <color name="statusBarColor">@android:color/holo_green_dark</color>
 </resources>

@@ -19,7 +19,8 @@ object Versions {
 
     val VERSION_NAME = "1.0.0"
 
-    val APPLICATION_ID = "com.wj.androidM3"
+    val APPLICATION_ID_FULL = "com.wj.androidM3"
+    val APPLICATION_ID_FREE = "com.wj.androidM3Free"
 
     val MIN_SDK = 21
 

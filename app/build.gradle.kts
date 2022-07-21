@@ -9,13 +9,37 @@ android {
     compileSdk = Versions.COMPILE_SDK
 
     defaultConfig {
-        applicationId = Versions.APPLICATION_ID
         minSdk = Versions.MIN_SDK
         targetSdk = Versions.TARGET_SDK
         versionCode = Versions.VERSION
         versionName = Versions.VERSION_NAME
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    flavorDimensions += "ver"
+    flavorDimensions += "env"
+
+    productFlavors {
+        create("free") {
+
+            dimension = "ver"
+            applicationId = Versions.APPLICATION_ID_FREE
+        }
+
+        create("full") {
+
+            dimension = "ver"
+            applicationId = Versions.APPLICATION_ID_FULL
+        }
+        create("cn") {
+            dimension = "env"
+        }
+
+        create("en") {
+
+            dimension = "env"
+        }
+
     }
 
     buildTypes {
