@@ -36,7 +36,7 @@ class LauncherActivity : BaseMVVMActivity<LauncherViewModel, ActivityLauncherBin
             0.5f
         )
         mImageViewAnimation.repeatCount = 0
-        mImageViewAnimation.duration = 2000
+        mImageViewAnimation.duration = 500
         mImageViewAnimation.repeatMode = Animation.REVERSE
         mImageViewAnimation.setAnimationListener(object :Animation.AnimationListener{
             override fun onAnimationStart(animation: Animation?) {

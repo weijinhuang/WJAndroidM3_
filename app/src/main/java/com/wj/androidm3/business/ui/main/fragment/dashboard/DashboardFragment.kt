@@ -58,6 +58,9 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         },
         FunctionBean("Install Google Play") {
             GoogleApiAvailability().makeGooglePlayServicesAvailable(requireActivity())
+        },
+        FunctionBean("Native Test") {
+//            WJLog.i("NativeLib().stringFromJNI() -> ${NativeLib().stringFromJNI()}")
         }
     )
 

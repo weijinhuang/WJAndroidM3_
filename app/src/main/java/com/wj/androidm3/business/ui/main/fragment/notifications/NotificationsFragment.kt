@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.wj.androidm3.databinding.FragmentNotificationsBinding
 import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.util.permission.canDrawOverlays
+import java.text.SimpleDateFormat
 
 class NotificationsFragment : Fragment() {
 
@@ -68,6 +69,11 @@ class NotificationsFragment : Fragment() {
             requestDrawOverlays.launch(Unit)
 //                }
 //            }
+        }
+        binding.timeRuler.setOnTimeSelectListener { time, timeZone ->
+            val simpleDateFormat = SimpleDateFormat()
+            simpleDateFormat.timeZone = timeZone
+            WJLog.d("onTimeSelected -> $time -> ${simpleDateFormat.format(time)}")
         }
     }
 

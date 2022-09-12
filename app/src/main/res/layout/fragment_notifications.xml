@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/navigationBarColor"
     tools:context=".business.ui.main.fragment.notifications.NotificationsFragment">
 
     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -12,6 +13,15 @@
         android:layout_height="wrap_content"
         android:text="在其他应用之上显示"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.wj.basecomponent.view.TimeRuler
+        android:id="@+id/time_ruler"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/black"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@+id/sw_drawOverlays" />
 
     <TextView
         android:id="@+id/text_notifications"
