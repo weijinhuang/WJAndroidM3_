@@ -38,8 +38,9 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
     var mFirstScaleTime = 0L
 
     private var mLeftTime = 0L
-    private var mMiddleTime = 0L
     private var mLeftTimeTemp = 0L
+    private var mMiddleTime = 0L
+    private var mMiddleTimeTemp = 0L
 
     private var mBeginTime = 0L//刻度尺的开始时间
     private var mEndTime = 0L//刻度尺的结束时间
@@ -63,7 +64,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
     constructor(context: Context?, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context?) : this(context, null, 0)
 
-    fun setOnTimeSelectListener(onTimeSelect:(Long, TimeZone) -> Unit){
+    fun setOnTimeSelectListener(onTimeSelect: (Long, TimeZone) -> Unit) {
         mOnTimeSelected = onTimeSelect
     }
 
@@ -97,16 +98,15 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
         calendar.set(Calendar.MINUTE, 59)
         calendar.set(Calendar.SECOND, 59)
         mEndTime = calendar.timeInMillis
-
         mMiddleTime = (mBeginTime + mEndTime) shr 1
-
         mLeftTime = mMiddleTime - (mMsInScreen shr 1)
-
-        WJLog.d("mBeginTime:$mBeginTime mEndTime:$mEndTime mMiddleTime:$mMiddleTime mLeftTime:$mLeftTime ")
-
-
+//        WJLog.d("mBeginTime:$mBeginTime mEndTime:$mEndTime mMiddleTime:$mMiddleTime mLeftTime:$mLeftTime ")
         mPaint.color = mTextColor
         mPaint.textSize = mTextSize.toFloat()
+    }
+
+    private fun calcBoundsTime() {
+
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
@@ -134,6 +134,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
                                 msInScreen = MIN_MS
                             }
                             mMsInScreen = msInScreen
+                            mLeftTime = mMiddleTime - (mMsInScreen shr 1)
                             calcPixel()
                             invalidate()
                         }
@@ -154,7 +155,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
                 detector?.let {
                     WJLog.d("onScaleEnd scaleFactor -> ${detector.scaleFactor}")
                 }
-                mScaleEnable = false
+//                mScaleEnable = false
             }
         })
     }
@@ -166,13 +167,16 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 mLeftTimeTemp = mLeftTime
+                mMiddleTimeTemp = mMiddleTime
                 mFirstTouchPoint.set(event.x, event.y)
             }
             MotionEvent.ACTION_MOVE -> {
                 if (event.pointerCount >= 2) {
+                    WJLog.d("mScaleGestureDetector?.onTouchEvent(event)")
                     mScaleGestureDetector?.onTouchEvent(event)
                 } else {
                     if (!mScaleEnable) {
+                        WJLog.d("ACTION_MOVE")
                         move(event)
                     }
                 }
@@ -197,14 +201,14 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
             val moveX = historicalX - mFirstTouchPoint.x
             val timeShift: Long = (mMSPerPixel * moveX).toLong()
             mLeftTime = mLeftTimeTemp - timeShift
-
+            mMiddleTime = mMiddleTimeTemp - timeShift
             val timeSecondShift = mLeftTime % mScaleMsStep
             mFirstScaleTime = if (timeSecondShift == 0L) {
                 mLeftTime
             } else {
                 mLeftTime + mScaleMsStep - timeSecondShift
             }
-            WJLog.d("mLeftTime -> $mLeftTime")
+            WJLog.d("mLeftTime -> $mLeftTime mMiddleTime -> $mMiddleTime")
             invalidate()
         }
 
@@ -273,10 +277,11 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
             mFirstScaleTime += mScaleMsStep
         }
         val middleScalePos = (mMsInScreen shr 1) * mPixelPerMS
-        WJLog.d("middleScalePos : $middleScalePos")
+        val middleScalePos2 = (mMiddleTime - mLeftTime) * mPixelPerMS
         mPaint.color = Color.RED
         canvas.drawLine(middleScalePos, 0f, middleScalePos, height.toFloat(), mPaint)
-
+        canvas.drawLine(middleScalePos2, 0f, middleScalePos2, height.toFloat(), mPaint)
+        WJLog.d("middleScalePos : $middleScalePos  middleScalePos2 : $middleScalePos2")
     }
 
     private fun drawTimeData(canvas: Canvas) {
