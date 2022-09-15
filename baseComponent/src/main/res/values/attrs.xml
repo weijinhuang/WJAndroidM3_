@@ -3,5 +3,7 @@
     <declare-styleable name="TimeRuler">
         <attr name="android:textColor" />
         <attr name="android:textSize" />
+        <attr name="android:orientation"/>
+        <attr name="time_ruler_lineSize" format="dimension" />
     </declare-styleable>
 </resources>

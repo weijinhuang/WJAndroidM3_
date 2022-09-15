@@ -1,13 +1,13 @@
 package com.wj.basecomponent.view
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.*
 
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.widget.LinearLayout
 import com.wj.basecomponent.R
 import com.wj.basecomponent.util.log.WJLog
 import java.text.SimpleDateFormat
@@ -31,11 +31,15 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
 
     private val mPaint: Paint = Paint()
 
+    private var mOrientationMode = LinearLayout.HORIZONTAL
+
     private var mMsInScreen = MAX_MS// 一个屏幕包含的毫秒
     private var mPixelPerMS = 0f//1毫秒的像素长度
     private var mMSPerPixel = 0//1像素的毫秒数
 
     var mFirstScaleTime = 0L
+
+    private var mLineSize = 10
 
     private var mLeftTime = 0L
     private var mLeftTimeTemp = 0L
@@ -74,6 +78,8 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
                 ctx.obtainStyledAttributes(it, R.styleable.TimeRuler).let { obtainStyledAttributes ->
                     mTextColor = obtainStyledAttributes.getColor(R.styleable.TimeRuler_android_textColor, Color.BLACK)
                     mTextSize = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_android_textSize, 16)
+                    mLineSize = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_time_ruler_lineSize, 10)
+                    mOrientationMode = obtainStyledAttributes.getInt(R.styleable.TimeRuler_android_orientation, LinearLayout.HORIZONTAL)
                     mPaint.color = mTextColor
                     mPaint.textSize = mTextSize.toFloat()
                     mTextWidth = mPaint.measureText("00:00").toInt()
@@ -103,6 +109,11 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
 //        WJLog.d("mBeginTime:$mBeginTime mEndTime:$mEndTime mMiddleTime:$mMiddleTime mLeftTime:$mLeftTime ")
         mPaint.color = mTextColor
         mPaint.textSize = mTextSize.toFloat()
+    }
+
+    fun setData(timeData: List<TimeBean>) {
+        mTimeList = timeData
+        invalidate()
     }
 
     private fun calcBoundsTime() {
@@ -197,9 +208,17 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
     private fun move(event: MotionEvent) {
         val historySize = event.historySize
         for (i in 0 until historySize) {
-            val historicalX = event.getHistoricalX(i)
-            val moveX = historicalX - mFirstTouchPoint.x
-            val timeShift: Long = (mMSPerPixel * moveX).toLong()
+
+            val historicalCoordinate: Float
+            val moveCoordinate: Float
+            if (mOrientationMode == LinearLayout.HORIZONTAL) {
+                historicalCoordinate = event.getHistoricalX(i)
+                moveCoordinate = historicalCoordinate - mFirstTouchPoint.x
+            } else {
+                historicalCoordinate = event.getHistoricalY(i)
+                moveCoordinate = historicalCoordinate - mFirstTouchPoint.y
+            }
+            val timeShift: Long = (mMSPerPixel * moveCoordinate).toLong()
             mLeftTime = mLeftTimeTemp - timeShift
             mMiddleTime = mMiddleTimeTemp - timeShift
             val timeSecondShift = mLeftTime % mScaleMsStep
@@ -210,6 +229,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
             }
             WJLog.d("mLeftTime -> $mLeftTime mMiddleTime -> $mMiddleTime")
             invalidate()
+
         }
 
     }
@@ -217,18 +237,24 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
     override fun onDraw(canvas: Canvas?) {
         calcPixel()
         canvas?.let {
-            drawScale(canvas)
+            if (mOrientationMode == LinearLayout.HORIZONTAL) {
+                drawScaleHorizontal(canvas)
+                drawTimeDataHorizontal(canvas)
+            } else {
+                drawScaleVertical(canvas)
+                drawTimeDataVertical(canvas)
+            }
         }
     }
 
 
     private fun calcPixel() {
-        val viewWidth = width
-        if (viewWidth == 0) {
+        val viewPixel = if (mOrientationMode == LinearLayout.HORIZONTAL) width else height
+        if (viewPixel == 0) {
             return
         }
-        mPixelPerMS = viewWidth / (mMsInScreen.toFloat())
-        mMSPerPixel = mMsInScreen / viewWidth
+        mPixelPerMS = viewPixel / (mMsInScreen.toFloat())
+        mMSPerPixel = mMsInScreen / viewPixel
         when (mMsInScreen) {
             MIN_MS -> {// 6分钟
                 mScaleMsStep = 12000
@@ -256,7 +282,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
         }
     }
 
-    private fun drawScale(canvas: Canvas) {
+    private fun drawScaleHorizontal(canvas: Canvas) {
         mPaint.color = mTextColor
         var scaleX = (mFirstScaleTime - mLeftTime) * mPixelPerMS
         val leftBound = -mTextWidth
@@ -284,8 +310,44 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
         WJLog.d("middleScalePos : $middleScalePos  middleScalePos2 : $middleScalePos2")
     }
 
-    private fun drawTimeData(canvas: Canvas) {
-        mTimeList?.let { timeList ->
+    private fun drawTimeDataHorizontal(canvas: Canvas) {
+
+        mTimeList?.forEach { timeBean ->
+
+        }
+    }
+
+    private fun drawScaleVertical(canvas: Canvas) {
+        mPaint.color = mTextColor
+        var scaleY = (mFirstScaleTime - mLeftTime) * mPixelPerMS
+        val leftBound = -mTextSize
+        val rightBound = height + mTextSize
+        while (scaleY < rightBound && scaleY > leftBound) {
+            val fl = mFirstScaleTime % mTimeTextStep
+//            WJLog.d("$scaleX % $mTimeTextStep = $fl")
+            if (fl == 0L) {
+                val timeText = mSimpleDateFormat.format(mFirstScaleTime)
+                WJLog.d("$mFirstScaleTime -> $timeText")
+                canvas.drawText(timeText, 0f, scaleY + (mTextSize shr 1), mPaint)
+                canvas.drawLine(0f, scaleY, (mTextSize shr 1).toFloat(), scaleY, mPaint)
+            } else {
+                canvas.drawLine(0f, scaleY, mTextSize.toFloat(), scaleY, mPaint)
+            }
+
+            scaleY += mScaleMsStep * mPixelPerMS
+            mFirstScaleTime += mScaleMsStep
+        }
+        val middleScalePos = (mMsInScreen shr 1) * mPixelPerMS
+//        val middleScalePos2 = (mMiddleTime - mLeftTime) * mPixelPerMS
+        mPaint.color = Color.RED
+        canvas.drawLine(0f, middleScalePos, width.toFloat(), middleScalePos, mPaint)
+//        canvas.drawLine(middleScalePos2, 0f, middleScalePos2, height.toFloat(), mPaint)
+        WJLog.d("middleScalePos : $middleScalePos")
+    }
+
+    private fun drawTimeDataVertical(canvas: Canvas) {
+
+        mTimeList?.forEach { timeBean ->
 
         }
     }

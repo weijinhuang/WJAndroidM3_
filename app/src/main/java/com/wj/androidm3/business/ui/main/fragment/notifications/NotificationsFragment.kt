@@ -15,7 +15,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.wj.androidm3.databinding.FragmentNotificationsBinding
 import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.util.permission.canDrawOverlays
+import com.wj.basecomponent.view.TimeBean
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class NotificationsFragment : Fragment() {
 
@@ -59,6 +62,22 @@ class NotificationsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDrawOverlays()
+        testTimeRuler()
+    }
+
+    private fun testTimeRuler() {
+        val timeData = ArrayList<TimeBean>(10)
+        for (i in 0 until 10) {
+            val instance = Calendar.getInstance()
+            instance.set(Calendar.HOUR, i)
+            instance.set(Calendar.MINUTE, i)
+            val startTime = instance.timeInMillis
+            instance.set(Calendar.MINUTE, i * 5)
+            val endTime = instance.timeInMillis
+            val timeBean = TimeBean(startTime, endTime)
+            timeData.add(timeBean)
+        }
+        binding.timeRuler.setData(timeData)
     }
 
     private fun setDrawOverlays() {
@@ -71,7 +90,7 @@ class NotificationsFragment : Fragment() {
 //            }
         }
         binding.timeRuler.setOnTimeSelectListener { time, timeZone ->
-            val simpleDateFormat = SimpleDateFormat()
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
             simpleDateFormat.timeZone = timeZone
             WJLog.d("onTimeSelected -> $time -> ${simpleDateFormat.format(time)}")
         }
