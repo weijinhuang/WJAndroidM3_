@@ -2,6 +2,7 @@ package com.wj.androidm3.business.ui.main.fragment.notifications
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -67,6 +68,7 @@ class NotificationsFragment : Fragment() {
 
     private fun testTimeRuler() {
         val timeData = ArrayList<TimeBean>(10)
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         for (i in 0 until 10) {
             val instance = Calendar.getInstance()
             instance.set(Calendar.HOUR, i)
@@ -75,7 +77,11 @@ class NotificationsFragment : Fragment() {
             instance.set(Calendar.MINUTE, i * 5)
             val endTime = instance.timeInMillis
             val timeBean = TimeBean(startTime, endTime)
+            if (i % 2 == 0) {
+                timeBean.color = Color.RED
+            }
             timeData.add(timeBean)
+            WJLog.d("TimeData $i -> ${simpleDateFormat.format(startTime)}:${simpleDateFormat.format(endTime)}")
         }
         binding.timeRuler.setData(timeData)
     }
@@ -94,6 +100,7 @@ class NotificationsFragment : Fragment() {
             simpleDateFormat.timeZone = timeZone
             WJLog.d("onTimeSelected -> $time -> ${simpleDateFormat.format(time)}")
         }
+        binding.timeRuler.setCurrentTime(System.currentTimeMillis())
     }
 
     override fun onDestroyView() {
