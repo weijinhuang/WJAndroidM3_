@@ -17,17 +17,17 @@
     <com.wj.basecomponent.view.TimeRuler
         android:id="@+id/time_ruler"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="match_parent"
         android:background="@color/black"
         android:orientation="horizontal"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintTop_toBottomOf="@+id/sw_drawOverlays"
-        app:time_ruler_lineSize="3dp" />
+        app:time_ruler_lineSize="20dp" />
 
     <TextView
         android:id="@+id/text_notifications"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -38,4 +38,40 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/tab_text_1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/text2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/text2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/tab_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/text3"
+        app:layout_constraintStart_toEndOf="@+id/text" />
+
+    <TextView
+        android:id="@+id/text3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/tab_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/text4"
+        app:layout_constraintStart_toEndOf="@+id/text2" />
+
+    <TextView
+        android:id="@+id/text4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/tab_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/text3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

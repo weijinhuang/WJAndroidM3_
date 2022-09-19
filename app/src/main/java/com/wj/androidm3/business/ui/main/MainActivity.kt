@@ -10,6 +10,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.wj.androidm3.R
 import com.wj.androidm3.business.services.WJFCMService
 import com.wj.androidm3.databinding.ActivityMainBinding
+import com.wj.basecomponent.util.log.WJLog
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +23,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
-
+        navView.inflateMenu(R.menu.bottom_nav_menu)
+        val currentTimeMillis = System.currentTimeMillis()
+        WJLog.d("currentTimeMillis -> $currentTimeMillis")
+        if ((currentTimeMillis % 2).toInt() == 0) {
+            navView.menu.removeItem(R.id.navigation_dashboard2)
+        }
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.

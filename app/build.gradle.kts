@@ -86,6 +86,13 @@ android {
 dependencies {
 
     implementation(project(mapOf("path" to ":baseComponent")))
+    implementation("androidx.appcompat:appcompat:1.3.0")
+    implementation("com.google.android.material:material:1.6.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+//    implementation(project(mapOf("path" to ":nativelib")))
+
     implementation(project(mapOf("path" to ":nativelib")))
     Libs.commonDep(this)
 

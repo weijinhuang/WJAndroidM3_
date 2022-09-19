@@ -245,11 +245,11 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
         calcPixel()
         canvas?.let {
             if (mOrientationMode == LinearLayout.HORIZONTAL) {
-                drawScaleHorizontal(canvas)
                 drawTimeDataHorizontal(canvas)
+                drawScaleHorizontal(canvas)
             } else {
-                drawScaleVertical(canvas)
                 drawTimeDataVertical(canvas)
+                drawScaleVertical(canvas)
             }
         }
     }
@@ -299,10 +299,10 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
 //            WJLog.d("$scaleX % $mTimeTextStep = $fl")
             if (fl == 0L) {
                 val timeText = mSimpleDateFormat.format(mFirstScaleTime)
-                canvas.drawText(timeText, scaleX - (mTextWidth shr 1), (bottom / 2).toFloat(), mPaint)
-                canvas.drawLine(scaleX, mLineSize, scaleX, height.toFloat() / 3 + mLineSize, mPaint)
+                canvas.drawText(timeText, scaleX - (mTextWidth shr 1), mLineSize * 2, mPaint)
+                canvas.drawLine(scaleX, 0f, scaleX, mLineSize * 1.5f, mPaint)
             } else {
-                canvas.drawLine(scaleX, mLineSize, scaleX, height.toFloat() / 4 + mLineSize, mPaint)
+                canvas.drawLine(scaleX, 0f, scaleX, mLineSize, mPaint)
             }
 
             scaleX += mScaleMsStep * mPixelPerMS
@@ -338,10 +338,10 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
             if (fl == 0L) {
                 val timeText = mSimpleDateFormat.format(mFirstScaleTime)
 //                WJLog.d("$mFirstScaleTime -> $timeText")
-                canvas.drawText(timeText, (mTextSize shl 1).toFloat() + mLineSize, scaleY + mTextSize * 0.3f, mPaint)
-                canvas.drawLine(mLineSize, scaleY, mTextSize * 1.5f + mLineSize, scaleY, mPaint)
+                canvas.drawText(timeText, (mTextSize shl 1).toFloat(), scaleY + mTextSize * 0.3f, mPaint)
+                canvas.drawLine(0f, scaleY,  mLineSize * 1.5f , scaleY, mPaint)
             } else {
-                canvas.drawLine(mLineSize, scaleY, mTextSize.toFloat(), scaleY, mPaint)
+                canvas.drawLine(0f, scaleY, mLineSize, scaleY, mPaint)
             }
 
             scaleY += mScaleMsStep * mPixelPerMS
