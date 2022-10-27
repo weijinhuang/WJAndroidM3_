@@ -74,8 +74,7 @@ android {
 dependencies {
 
     implementation(project(mapOf("path" to ":baseComponent")))
-//    implementation(project(mapOf("path" to ":nativelib")))
-
+    implementation(project(mapOf("path" to ":nativelib")))
     Libs.commonDep(this)
 
 }

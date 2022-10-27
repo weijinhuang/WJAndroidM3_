@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "WJAndroidM3"
 include ':app'
 include ':baseComponent'
+include ':nativelib'

@@ -10,6 +10,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.wj.androidm3.R
 import com.wj.androidm3.business.services.BackgroundService
 import com.wj.androidm3.business.ui.conversationincome.PhoneConversationActivity
+import com.wj.androidm3.business.ui.kotlintest.KotlinTestActivity
 import com.wj.androidm3.databinding.FragmentDashboardBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
 import com.wj.basecomponent.util.log.WJLog
@@ -61,6 +62,11 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         },
         FunctionBean("Native Test") {
 //            WJLog.i("NativeLib().stringFromJNI() -> ${NativeLib().stringFromJNI()}")
+        },
+        FunctionBean("Kotlin Test") {
+            Intent(requireActivity(), KotlinTestActivity::class.java).apply {
+                requireActivity().startActivity(this)
+            }
         }
     )
 
