@@ -5,6 +5,7 @@ import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 open class BaseViewModel : ViewModel(), Observable {
@@ -13,6 +14,7 @@ open class BaseViewModel : ViewModel(), Observable {
     fun launch(codeBlock: suspend CoroutineScope.() -> Unit) =
         viewModelScope.launch(block = codeBlock)
 
+    fun launchBackground(codeBlock: suspend CoroutineScope.() -> Unit) = viewModelScope.launch(context = Dispatchers.IO, block = codeBlock)
 
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
         mPropertyChangeRegistry.add(callback)
