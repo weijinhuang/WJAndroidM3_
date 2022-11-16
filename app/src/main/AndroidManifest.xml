@@ -4,6 +4,8 @@
     package="com.wj.androidm3">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:name=".business.WJApplication"
         android:allowBackup="true"
@@ -66,6 +68,8 @@
         <activity
             android:name=".business.ui.kotlintest.KotlinTestActivity"
             android:screenOrientation="portrait" />
+
+        <activity android:name=".business.ui.media.MediaActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

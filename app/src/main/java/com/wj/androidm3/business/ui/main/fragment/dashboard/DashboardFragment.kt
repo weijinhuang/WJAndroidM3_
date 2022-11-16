@@ -11,6 +11,7 @@ import com.wj.androidm3.R
 import com.wj.androidm3.business.services.BackgroundService
 import com.wj.androidm3.business.ui.conversationincome.PhoneConversationActivity
 import com.wj.androidm3.business.ui.kotlintest.KotlinTestActivity
+import com.wj.androidm3.business.ui.media.MediaActivity
 import com.wj.androidm3.databinding.FragmentDashboardBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
 import com.wj.basecomponent.util.log.WJLog
@@ -65,6 +66,11 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         },
         FunctionBean("Kotlin Test") {
             Intent(requireActivity(), KotlinTestActivity::class.java).apply {
+                requireActivity().startActivity(this)
+            }
+        },
+        FunctionBean("Media Test") {
+            Intent(requireActivity(), MediaActivity::class.java).apply {
                 requireActivity().startActivity(this)
             }
         }

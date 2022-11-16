@@ -26,6 +26,7 @@ class KotlinTestFragment : BaseMVVMFragment<KotlinTestViewModel, FragmentKotlinT
             functionRv.adapter = adapter
             functionRv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
         }
+
     }
 
     override fun getLayoutId(): Int {

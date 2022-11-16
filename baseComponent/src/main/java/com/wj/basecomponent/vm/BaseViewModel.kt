@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 open class BaseViewModel : ViewModel(), Observable {
     private val mPropertyChangeRegistry: PropertyChangeRegistry by lazy { PropertyChangeRegistry() }
@@ -15,6 +16,8 @@ open class BaseViewModel : ViewModel(), Observable {
         viewModelScope.launch(block = codeBlock)
 
     fun launchBackground(codeBlock: suspend CoroutineScope.() -> Unit) = viewModelScope.launch(context = Dispatchers.IO, block = codeBlock)
+
+    fun launchBackground2(codeBlock: CoroutineScope.() -> Unit) = viewModelScope.launch(context = Dispatchers.IO, block = codeBlock)
 
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
         mPropertyChangeRegistry.add(callback)
