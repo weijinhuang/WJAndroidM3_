@@ -11,6 +11,7 @@ import com.wj.androidm3.R
 import com.wj.androidm3.databinding.FragmentAudioBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
 import com.wj.basecomponent.util.log.WJLog
+import com.wj.nativelib.WJMediaJNIHepler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.FileOutputStream
@@ -26,41 +27,57 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
     override fun firstCreateView() {
         mViewBinding?.run {
             startRecordAudio.setOnClickListener { btn ->
-                checkPermission {
-                    initAudioRecord { ar, bufSize ->
-                        if (ar.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
-                            ar.stop()
-                            mRecordingJob?.cancel()
-                            mRecordingJob = null
-                            startRecordAudio.text = "Start Record"
-                        } else {
-                            startRecordAudio.text = "Stop Record"
-                            mRecordingJob = mViewModel.launchBackground2 {
-                                ar.startRecording()
-                                val buffer = ByteArray(bufSize)
-                                try {
-                                    val audioFileName =
-                                        requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + System.currentTimeMillis() + ".pcm"
-                                    WJLog.i("Start record -> $audioFileName")
-                                    FileOutputStream(audioFileName).use { fos ->
-                                        while (isActive) {
-                                            val ret = ar.read(buffer, 0, bufSize)
-                                            WJLog.d("recording : $ret")
-                                            if (ret > 0) {
-                                                fos.write(buffer, 0, ret)
+                checkReadExternalFilePermission {
+                    checkPermission {
+                        initAudioRecord { ar, bufSize ->
+                            if (ar.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
+                                ar.stop()
+                                mRecordingJob?.cancel()
+                                mRecordingJob = null
+                                startRecordAudio.text = "Start Record"
+                            } else {
+                                startRecordAudio.text = "Stop Record"
+                                mRecordingJob = mViewModel.launchBackground2 {
+                                    ar.startRecording()
+                                    val buffer = ByteArray(bufSize)
+                                    try {
+                                        val audioFileName =
+                                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + System.currentTimeMillis() + ".pcm"
+                                        WJLog.i("Start record -> $audioFileName")
+                                        FileOutputStream(audioFileName).use { fos ->
+                                            while (isActive) {
+                                                val ret = ar.read(buffer, 0, bufSize)
+                                                WJLog.d("recording : $ret")
+                                                if (ret > 0) {
+                                                    fos.write(buffer, 0, ret)
+                                                }
                                             }
                                         }
-                                    }
 
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                    WJLog.e(e.message ?: "")
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                        WJLog.e(e.message ?: "")
+                                    }
+                                    WJLog.i("Recording end")
                                 }
-                                WJLog.i("Recording end")
                             }
                         }
                     }
                 }
+
+            }
+            playAudio.setOnClickListener {
+                checkReadExternalFilePermission {
+                    mViewModel.launchBackground2 {
+                        val path =
+                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" +  "if_have_a_date.mp3"
+//                        val path = Environment.getExternalStorageDirectory().path + "/Music/if_have_a_date.mp3"
+                        WJLog.d("播放：$path")
+                        val mediaPlayer = WJMediaJNIHepler()
+                        mediaPlayer.playAudio(path)
+                    }
+                }
+
             }
         }
 
@@ -94,6 +111,14 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
             block.invoke()
         } else {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.RECORD_AUDIO), 99)
+        }
+    }
+
+    private fun checkReadExternalFilePermission(block: () -> Unit) {
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            block.invoke()
+        } else {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 99)
         }
     }
 }
