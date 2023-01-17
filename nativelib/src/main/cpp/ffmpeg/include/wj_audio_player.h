@@ -9,6 +9,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include <jni.h>
 #include "libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
 #include "libswresample/swresample.h"
@@ -32,7 +33,6 @@ private:
 
     AVPacket *packet;
     AVFrame *frame;
-
     uint8_t *out_buffer;
 public:
 

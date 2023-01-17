@@ -17,13 +17,38 @@
             android:text="start record audio"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/startRecordAAC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start record AAC"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <Button
             android:id="@+id/playAudio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="play record audio"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/startRecordAudio"/>
+            app:layout_constraintTop_toBottomOf="@+id/startRecordAudio" />
+
+        <Button
+            android:id="@+id/resample_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="resample audio"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/playAudio" />
+
+        <Button
+            android:id="@+id/push_av"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="push_av"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/resample_audio" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

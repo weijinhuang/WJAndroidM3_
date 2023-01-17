@@ -15,6 +15,15 @@ android {
         versionName = Versions.VERSION_NAME
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("armeabi-v7a")
+        }
+    }
+
+    lint {
+        baseline = file("lint-baseline.xml")
     }
     flavorDimensions += "ver"
     flavorDimensions += "env"

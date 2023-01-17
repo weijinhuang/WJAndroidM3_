@@ -15,6 +15,8 @@ import com.wj.nativelib.WJMediaJNIHepler
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
 
@@ -24,11 +26,24 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
 
     private var mRecordingJob: Job? = null
 
+
     override fun firstCreateView() {
         mViewBinding?.run {
+            startRecordAAC.setOnClickListener {
+                checkReadExternalFilePermission {
+                    checkRecordPermission {
+                        val aacFile = mViewModel.createAACAudioFile()
+                        initAudioRecord{audioRecord, buffSize ->
+
+
+                        }
+                    }
+                }
+            }
+
             startRecordAudio.setOnClickListener { btn ->
                 checkReadExternalFilePermission {
-                    checkPermission {
+                    checkRecordPermission {
                         initAudioRecord { ar, bufSize ->
                             if (ar.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
                                 ar.stop()
@@ -41,8 +56,11 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                                     ar.startRecording()
                                     val buffer = ByteArray(bufSize)
                                     try {
+                                        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
                                         val audioFileName =
-                                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + System.currentTimeMillis() + ".pcm"
+                                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
+                                                System.currentTimeMillis()
+                                            ) + ".pcm"
                                         WJLog.i("Start record -> $audioFileName")
                                         FileOutputStream(audioFileName).use { fos ->
                                             while (isActive) {
@@ -50,6 +68,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                                                 WJLog.d("recording : $ret")
                                                 if (ret > 0) {
                                                     fos.write(buffer, 0, ret)
+                                                    WJLog.i(buffer.contentToString())
                                                 }
                                             }
                                         }
@@ -70,7 +89,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                 checkReadExternalFilePermission {
                     mViewModel.launchBackground2 {
                         val path =
-                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" +  "if_have_a_date.mp3"
+                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date.mp3"
 //                        val path = Environment.getExternalStorageDirectory().path + "/Music/if_have_a_date.mp3"
                         WJLog.d("播放：$path")
                         val mediaPlayer = WJMediaJNIHepler()
@@ -78,6 +97,23 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                     }
                 }
 
+            }
+            resampleAudio.setOnClickListener {
+                val inPath =
+                    requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date.mp3"
+                val outPath =
+                    requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date2.mp3"
+//                        val path = Environment.getExternalStorageDirectory().path + "/Music/if_have_a_date.mp3"
+                WJLog.d("播放：$inPath")
+                val mediaPlayer = WJMediaJNIHepler()
+                mediaPlayer.audioResample(inPath, outPath, 16000)
+            }
+            pushAv.setOnClickListener {
+                val inputPath = "";
+                val outPath = "";
+                WJMediaJNIHepler().apply {
+                    pushStream(inputPath, outPath);
+                }
             }
         }
 
@@ -97,8 +133,13 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
             block.invoke(mAudioRecord!!, bufferSize)
             return
         }
-        mAudioRecord =
-            AudioRecord(MediaRecorder.AudioSource.MIC, mSimpleRate, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, bufferSize)
+        mAudioRecord = AudioRecord(
+            MediaRecorder.AudioSource.MIC,
+            mSimpleRate,
+            AudioFormat.CHANNEL_IN_STEREO,
+            AudioFormat.ENCODING_PCM_16BIT,
+            bufferSize
+        )
         block.invoke(mAudioRecord!!, bufferSize)
     }
 
@@ -106,7 +147,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
         return R.layout.fragment_audio
     }
 
-    private fun checkPermission(block: () -> Unit) {
+    private fun checkRecordPermission(block: () -> Unit) {
         if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
             block.invoke()
         } else {

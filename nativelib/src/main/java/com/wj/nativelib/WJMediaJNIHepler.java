@@ -15,6 +15,9 @@ public class WJMediaJNIHepler {
 
     public native void playAudio(String filePath);
 
+
+    public native void audioResample(String inputPath, String outputPath, int sampleRate);
+
     public AudioTrack createAudioTrack(int sampleRate, int channel) {
         int channelConfig = channel == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
         int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
@@ -27,5 +30,10 @@ public class WJMediaJNIHepler {
         if (audioTrack != null) {
             audioTrack.release();
         }
+    }
+
+    private native int push(String inputPath, String outputPath);
+    public int pushStream(String inputPath, String outputPath) {
+        return push(inputPath, outputPath);
     }
 }

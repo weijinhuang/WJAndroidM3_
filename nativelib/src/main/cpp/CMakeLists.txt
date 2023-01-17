@@ -27,6 +27,12 @@ add_library( # Sets the name of the library.
         # Provides a relative path to your source file(s).
         wj_audio_player.cpp
         wj_audio_player_jni.cpp
+        ff_audio_resample.cpp
+        audio_resample_jni.cpp
+        ff_rtmp_pusher.cpp
+        ffmpeg_push_jni.cpp
+        media_recorder_context_jni.cpp
+        MediaRecorderContext.cpp
         nativelib.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
