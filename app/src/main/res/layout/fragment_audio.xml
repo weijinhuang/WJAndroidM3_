@@ -50,5 +50,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/resample_audio" />
 
+
+        <Button
+            android:id="@+id/aacRecord1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="aacRecord1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/push_av" />
+        <Button
+            android:id="@+id/stopAAcRecord1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="stopAAcRecord1"
+
+            app:layout_constraintStart_toEndOf="@+id/aacRecord1"
+            app:layout_constraintTop_toBottomOf="@+id/push_av" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

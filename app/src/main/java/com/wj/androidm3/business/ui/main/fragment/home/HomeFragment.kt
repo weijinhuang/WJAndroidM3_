@@ -13,7 +13,7 @@ class HomeFragment : BaseMVVMFragment<HomeViewModel, FragmentHomeBinding>() {
         mViewBinding?.viewModel = mViewModel
         mViewModel.getSystemInfo()
         mViewModel.getDensityInfo(requireActivity())
-        WJLog.d("----${NativeLib().ffmpegVersion()}----")
+        WJLog.d("{NativeLib().ffmpegVersion()->${NativeLib().ffmpegVersion()}")
     }
 
 

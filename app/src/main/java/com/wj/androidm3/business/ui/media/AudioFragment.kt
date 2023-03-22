@@ -11,7 +11,7 @@ import com.wj.androidm3.R
 import com.wj.androidm3.databinding.FragmentAudioBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
 import com.wj.basecomponent.util.log.WJLog
-import com.wj.nativelib.WJMediaJNIHepler
+import com.wj.nativelib.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import java.io.FileOutputStream
@@ -22,23 +22,61 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
 
     private var mAudioRecord: AudioRecord? = null
 
+    private var mFFMediaRecorder: FFMediaRecorder? = null
+
     var mSimpleRate = 44100
 
     private var mRecordingJob: Job? = null
 
+    private var mOutUrl: String = ""
+
+    private var mRecording = false
+
+    private var mWJNativeAudioEncoder: WJNativeAudioEncoder? = null
 
     override fun firstCreateView() {
         mViewBinding?.run {
             startRecordAAC.setOnClickListener {
-                checkReadExternalFilePermission {
-                    checkRecordPermission {
-                        val aacFile = mViewModel.createAACAudioFile()
-                        initAudioRecord{audioRecord, buffSize ->
+                if (!mRecording) {
+                    startRecordAAC.text = "Stop Recording ACC"
+                    checkReadExternalFilePermission {
+                        checkRecordPermission {
+                            initAudioRecord { audioRecord, buffSize ->
+                                if (null == mFFMediaRecorder) {
+                                    mFFMediaRecorder = FFMediaRecorder().apply { init() }
+                                }
+                                mFFMediaRecorder?.run {
+                                    mRecordingJob = mViewModel.launchBackground2 {
+                                        val mOutUrl = mViewModel.createAACAudioFile().absolutePath
+                                        WJLog.i("开始录制ACC->$mOutUrl")
+                                        StartRecord(RECORDER_TYPE_SINGLE_AUDIO, mOutUrl, 0, 0, 0, 0)
+                                        audioRecord.startRecording()
+                                        val simpleBuffer = ByteArray(4096)
+                                        while (isActive) {
+                                            val result = audioRecord.read(simpleBuffer, 0, 4096)
+                                            if (result > 0) {
+                                                WJLog.d("Kotlin层读取数据：$result")
+                                                mFFMediaRecorder?.OnAudioData(simpleBuffer, result)
+                                            }
+                                        }
+                                    }
+                                }
 
-
+                            }
                         }
                     }
+                } else {
+                    startRecordAAC.text = "Start Recording ACC"
+                    if (mAudioRecord?.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
+                        mFFMediaRecorder?.StopRecord()
+                        mAudioRecord?.stop()
+                        mAudioRecord?.release()
+                        mAudioRecord = null
+                        mRecordingJob?.cancel()
+                        mRecordingJob = null
+                    }
                 }
+
             }
 
             startRecordAudio.setOnClickListener { btn ->
@@ -68,7 +106,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                                                 WJLog.d("recording : $ret")
                                                 if (ret > 0) {
                                                     fos.write(buffer, 0, ret)
-                                                    WJLog.i(buffer.contentToString())
+//                                                    WJLog.i(buffer.contentToString())
                                                 }
                                             }
                                         }
@@ -115,6 +153,34 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                     pushStream(inputPath, outPath);
                 }
             }
+
+            aacRecord1.setOnClickListener {
+                checkReadExternalFilePermission {
+                    checkRecordPermission {
+                        if (null == mWJNativeAudioEncoder) {
+                            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+                            val audioFileName =
+                                requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
+                                    System.currentTimeMillis()
+                                ) + ".aac"
+                            WJLog.d("创建aac：$audioFileName")
+                            mWJNativeAudioEncoder = WJNativeAudioEncoder(requireActivity(), audioFileName)
+                        }
+                        mWJNativeAudioEncoder?.run {
+                            initRecorder()
+                            recordStart()
+                        }
+                    }
+                }
+
+
+            }
+
+            stopAAcRecord1.setOnClickListener {
+                WJLog.d("停止录制AAC")
+                mWJNativeAudioEncoder?.recordStop()
+                mWJNativeAudioEncoder = null
+            }
         }
 
     }
@@ -123,6 +189,11 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
         super.onStop()
         mRecordingJob?.cancel()
         mRecordingJob = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mFFMediaRecorder?.DestroyContext()
     }
 
     private fun initAudioRecord(block: (AudioRecord, Int) -> Unit) {
@@ -136,8 +207,8 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
         mAudioRecord = AudioRecord(
             MediaRecorder.AudioSource.MIC,
             mSimpleRate,
-            AudioFormat.CHANNEL_IN_STEREO,
-            AudioFormat.ENCODING_PCM_16BIT,
+            channelConfig,
+            audioFormat,
             bufferSize
         )
         block.invoke(mAudioRecord!!, bufferSize)

@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include "WJACCEncoder.h"
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_wj_nativelib_NativeLib_stringFromJNI(
@@ -60,4 +61,37 @@ Java_com_wj_nativelib_NativeLib_startRecord(JNIEnv *env, jobject thiz) {
 //        av_strerror()
     }
 
+}
+
+WJACCEncoder *pAACEncoder = nullptr;
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_wj_nativelib_WJNativeAudioEncoder_encodeAudioStart(JNIEnv *env, jobject thiz, jstring aac_path) {
+    if (nullptr == pAACEncoder) {
+        LOGI(LOG_TAG, "pAACEncoder = nullptr,创建native aac encoder");
+        pAACEncoder = new WJACCEncoder();
+        const char *aacPath = env->GetStringUTFChars(aac_path, NULL);
+        pAACEncoder->EncodeStart(aacPath);
+    } else {
+        LOGI(LOG_TAG, "pAACEncoder != nullptr");
+    }
+
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_wj_nativelib_WJNativeAudioEncoder_encodeAudioStop(JNIEnv *env, jobject thiz) {
+    if (nullptr != pAACEncoder) {
+        pAACEncoder->EncodeStop();
+        delete pAACEncoder;
+        pAACEncoder = nullptr;
+    }
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_wj_nativelib_WJNativeAudioEncoder_onAudioFrame(JNIEnv *env, jobject thiz, jbyteArray pcm_data, jint len) {
+    if (nullptr != pAACEncoder) {
+        jbyte *buffer = env->GetByteArrayElements(pcm_data, nullptr);
+        pAACEncoder->EncodeBuffer((unsigned char *) buffer, len);
+        env->ReleaseByteArrayElements(pcm_data, buffer, NULL);
+    }
 }

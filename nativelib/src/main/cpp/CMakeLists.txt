@@ -33,7 +33,11 @@ add_library( # Sets the name of the library.
         ffmpeg_push_jni.cpp
         media_recorder_context_jni.cpp
         MediaRecorderContext.cpp
-        nativelib.cpp)
+        ThreadSafeQueue.cpp
+        AudioFrame.cpp
+        SingleAudioRecoder.cpp
+        nativelib.cpp
+        WJACCEncoder.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

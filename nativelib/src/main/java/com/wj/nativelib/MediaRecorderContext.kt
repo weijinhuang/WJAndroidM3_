@@ -22,13 +22,13 @@ abstract class MediaRecorderContext {
 
     external fun Init():Int
 
-    external fun StartRecord(recorderType: Int, outUrl: String, frameWidth: Int, frameHeight: Int, videoBitRate: Int, fps: Int)
+    external fun StartRecord(recorderType: Int, outUrl: String, frameWidth: Int, frameHeight: Int, videoBitRate: Long, fps: Int):Int
 
     external fun OnAudioData(data: ByteArray, len: Int)
 
     external fun OnPreviewFrame(format: Int, data: ByteArray, width: Int, height: Int)
 
-    external fun StopRecord()
+    external fun StopRecord():Int
 
     external fun SetTransformMatrix(translateX: Float, transLateY: Float, scaleX: Float, scaleY: Float, degree: Int, mirror: Int)
 

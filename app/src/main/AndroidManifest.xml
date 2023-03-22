@@ -56,6 +56,7 @@
             android:name="com.wj.androidm3.business.ui.main.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"
+            android:hardwareAccelerated="false"
             android:theme="@style/Theme.WJAndroidM3" />
         <activity
             android:name=".business.ui.launcher.LauncherActivity"
@@ -70,7 +71,8 @@
             android:name=".business.ui.kotlintest.KotlinTestActivity"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".business.ui.media.MediaActivity" />
+        <activity android:name=".business.ui.media.MediaActivity"
+            android:hardwareAccelerated="false"/>
 
         <provider
             android:name="androidx.startup.InitializationProvider"
