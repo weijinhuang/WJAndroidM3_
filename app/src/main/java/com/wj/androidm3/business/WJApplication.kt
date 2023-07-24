@@ -1,8 +1,9 @@
 package com.wj.androidm3.business
 
 import android.app.Application
+import com.wj.basecomponent.BaseApplication
 
-class WJApplication : Application() {
+class WJApplication : BaseApplication() {
 
 
     companion object {

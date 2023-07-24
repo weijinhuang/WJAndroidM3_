@@ -21,6 +21,7 @@ object Versions {
 
     val APPLICATION_ID_FULL = "com.wj.androidM3"
     val APPLICATION_ID_FREE = "com.wj.androidM3Free"
+    val ORANGE = "com.acesee.smartorange"
 
     val MIN_SDK = 21
 

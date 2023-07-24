@@ -77,16 +77,16 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
     init {
         attrs?.let {
             context?.let { ctx ->
-                ctx.obtainStyledAttributes(it, R.styleable.TimeRuler).let { obtainStyledAttributes ->
-                    mTextColor = obtainStyledAttributes.getColor(R.styleable.TimeRuler_android_textColor, Color.BLACK)
-                    mTextSize = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_android_textSize, 16)
-                    mLineSize = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_time_ruler_lineSize, 10).toFloat()
-                    mOrientationMode = obtainStyledAttributes.getInt(R.styleable.TimeRuler_android_orientation, LinearLayout.HORIZONTAL)
-                    mPaint.color = mTextColor
-                    mPaint.textSize = mTextSize.toFloat()
-                    mTextWidth = mPaint.measureText("00:00").toInt()
-                    obtainStyledAttributes.recycle()
-                }
+//                ctx.obtainStyledAttributes(it, R.styleable.TimeRuler).let { obtainStyledAttributes ->
+//                    mTextColor = obtainStyledAttributes.getColor(R.styleable.TimeRuler_android_textColor, Color.BLACK)
+//                    mTextSize = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_android_textSize, 16)
+//                    mLineSize = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_time_ruler_lineSize, 10).toFloat()
+//                    mOrientationMode = obtainStyledAttributes.getInt(R.styleable.TimeRuler_android_orientation, LinearLayout.HORIZONTAL)
+//                    mPaint.color = mTextColor
+//                    mPaint.textSize = mTextSize.toFloat()
+//                    mTextWidth = mPaint.measureText("00:00").toInt()
+//                    obtainStyledAttributes.recycle()
+//                }
             }
         }
         initTime()

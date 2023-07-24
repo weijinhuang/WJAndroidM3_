@@ -11,7 +11,6 @@
 
     <application
         android:name=".business.WJApplication"
-        android:debuggable="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,7 +21,7 @@
         android:theme="@style/Theme.WJAndroidM3"
         tools:targetApi="31">
         <activity
-            android:name=".TabActivity"
+            android:name=".business.ui.tabact.TabActivity"
             android:exported="false"
             android:label="@string/title_activity_tab"
             android:theme="@style/Theme.WJAndroidM3.NoActionBar" />
@@ -64,6 +63,9 @@
             android:name="com.wj.androidm3.business.ui.main.MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden|locale|layoutDirection|keyboard"
+            tools:ignore="LockedOrientationActivity"
             android:theme="@style/Theme.WJAndroidM3" />
         <activity
             android:name=".business.ui.launcher.LauncherActivity"
@@ -74,7 +76,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".business.ui.tabact.TabActivity"/>
         <activity android:name=".business.ui.TestViewActivity" />
         <activity
             android:name=".business.ui.kotlintest.KotlinTestActivity"

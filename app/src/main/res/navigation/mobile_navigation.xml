@@ -22,4 +22,12 @@
         android:name="com.wj.androidm3.business.ui.main.fragment.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/viewPager2TestFragment"
+        android:name="com.wj.androidm3.business.ui.main.viewpage2.ViewPager2TestFragment"
+        android:label="ViewPager2TestFragment" />
+    <fragment
+        android:id="@+id/testLongSeViewPage2Fragment"
+        android:name="com.wj.androidm3.business.ui.test.TestLongSeViewPage2Fragment"
+        android:label="TestLongSeViewPage2Fragment" />
 </navigation>

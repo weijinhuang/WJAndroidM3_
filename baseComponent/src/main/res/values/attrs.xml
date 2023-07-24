@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="TimeRuler">
-        <attr name="android:textColor" />
-        <attr name="android:textSize" />
-        <attr name="android:orientation" />
-        <attr name="time_ruler_lineSize" format="dimension" />
+    <declare-styleable name="LongSeViewPage2">
+<!--        <attr name="LongSeViewPage_orientation" format="integer">-->
+<!--            <flag name="HORIZONTAL" value="0" />-->
+<!--            <flag name="VERTICAL" value="1" />-->
+<!--        </attr>-->
+<!--        <attr name="layout" format="integer">-->
+<!--            <flag name="linear_layout" value="1" />-->
+<!--            <flag name="grid_layout" value="2" />-->
+<!--        </attr>-->
     </declare-styleable>
+
+    <!--    <declare-styleable name="TimeRuler">-->
+    <!--        <attr name="android:textColor" />-->
+    <!--        <attr name="android:textSize" />-->
+    <!--        <attr name="android:orientation" />-->
+    <!--        <attr name="draw_strategy">-->
+    <!--            <flag name="text_first" value="1" />-->
+    <!--            <flag name="scale_first" value="2" />-->
+    <!--        </attr>-->
+    <!--        <attr name="time_order" format="boolean">-->
+    <!--            <flag name="reverse" value="1" />-->
+    <!--            <flag name="positive" value="2" />-->
+    <!--        </attr>-->
+    <!--        <attr name="time_ruler_lineSize" format="dimension" />-->
+    <!--        <attr name="time_ruler_line_storke_width" format="dimension" />-->
+    <!--    </declare-styleable>-->
 </resources>

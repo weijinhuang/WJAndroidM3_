@@ -9,6 +9,7 @@ import android.location.*
 import android.os.Environment
 import android.text.TextUtils
 import android.view.WindowManager
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -138,13 +139,27 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
             }
         },
         FunctionBean("showDialog") {
-            val title = arrayListOf<String>("base","tip","team","self",)
+            val title = arrayListOf<String>("base", "tip", "team", "self")
             showDialog("Title", "Content", "negative", "positive") { dialog, which ->
                 WJLog.d("you click ${if (which == DialogInterface.BUTTON_NEGATIVE) "Negative" else "Positive"}")
                 dialog.dismiss()
             }
+        },
+        FunctionBean("LocaleTest") {
+            localeTest()
+        },
+        FunctionBean("viewpage2") {
+            findNavController().navigate(R.id.viewPager2TestFragment)
+        },
+        FunctionBean("testLongSeViewPage2Fragment") {
+            findNavController().navigate(R.id.testLongSeViewPage2Fragment)
         }
     )
+
+    private fun localeTest() {
+        val default = Locale.getDefault()
+        WJLog.d("country:${default.country}\n language:${default.language} displayCountry:${default.displayCountry} displayLanguage:${default.displayLanguage} displayName:${default.displayName}")
+    }
 
     /**
      * 进制转换测试

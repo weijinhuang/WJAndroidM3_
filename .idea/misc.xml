@@ -3,6 +3,20 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/drawable/selector_agree.xml" value="0.3405" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/activity_main.xml" value="0.3619791666666667" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/activity_screen_dp.xml" value="0.3609375" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/activity_tab.xml" value="0.3619791666666667" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/activity_test_view.xml" value="0.33" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/fragment_dashboard.xml" value="0.1625" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/fragment_home.xml" value="0.3619791666666667" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/fragment_notifications.xml" value="0.3578125" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/fragment_tab.xml" value="0.3619791666666667" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/fragment_test_longse_viewpage2.xml" value="0.5" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/fragment_viewpage2_test.xml" value="0.3567708333333333" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/layout/fragment_viewpage2_test_child.xml" value="0.3567708333333333" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/menu/bottom_nav_menu.xml" value="0.3619791666666667" />
+        <entry key="..\:/longse/AndroidSource/WJAndroidM3_/app/src/main/res/menu/menu_main.xml" value="0.30833333333333335" />
         <entry key="..\:/source/WJAndroidM3/app/src/main/res/layout/activity_phone_conversation.xml" value="0.14722222222222223" />
         <entry key="..\:/source/WJAndroidM3/app/src/main/res/layout/fragment_conversation_income.xml" value="0.33" />
         <entry key="..\:/source/WJAndroidM3/app/src/main/res/layout/fragment_dashboard.xml" value="0.37135416666666665" />

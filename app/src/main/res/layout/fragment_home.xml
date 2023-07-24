@@ -11,9 +11,10 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:context=".business.ui.main.fragment.home.HomeFragment">
 
         <TextView
@@ -43,10 +44,9 @@
             app:layout_constraintTop_toBottomOf="@+id/text_home"
             tools:text="Power by H.W.J" />
 
-        <GridView
-            android:id="@+id/preset_grid_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <CheckBox
+            android:button="@drawable/selector_agree"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+    </LinearLayout>
 </layout>
