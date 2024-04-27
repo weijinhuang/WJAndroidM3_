@@ -24,7 +24,7 @@ int WJACCEncoder::EncodeFrame(AVCodecContext *pCodecCtx, AVFrame *pFrame) {
 }
 
 int WJACCEncoder::EncodeStart(const char *aacPath) {
-    LOGI(LOG_TAG, "WJACCEncoder::EncodeStart(const char *aacPath) %s", aacPath);
+    LOGI(LOG_TAG, "JNI::WJACCEncoder::EncodeStart(const char *aacPath) %s", aacPath);
     //注册组件
     av_register_all();
     //获取输出文件的上下文环境
@@ -47,6 +47,7 @@ int WJACCEncoder::EncodeStart(const char *aacPath) {
         return -1;
     }
     //设置编码器参数
+    LOGI(LOG_TAG, "JNI 设置编码器参数,sample_rate:%d sample_fmt:%s bit_rate:%d", 44100, "AV_SAMPLE_FMT_FLTP", 96000);
     pCodecCtx = audioStream->codec;
     pCodecCtx->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
     pCodecCtx->codec_id = fmt->audio_codec;
@@ -74,7 +75,10 @@ int WJACCEncoder::EncodeStart(const char *aacPath) {
     audioBuffer = (uint8_t *) av_malloc(bufferSize);
     avcodec_fill_audio_frame(audioFrame, pCodecCtx->channels, pCodecCtx->sample_fmt, (const uint8_t *) audioBuffer, bufferSize, 1);
     //写文件头
-    avformat_write_header(pFormatCtx, nullptr);
+    int writeHeaderRet = avformat_write_header(pFormatCtx, nullptr);
+    if (writeHeaderRet < 0) {
+        LOGE(LOG_TAG, "写文件头失败：%d", writeHeaderRet);
+    }
     av_new_packet(&audioPacket, bufferSize);
     //音频转码
     swr = swr_alloc();
@@ -90,7 +94,7 @@ int WJACCEncoder::EncodeStart(const char *aacPath) {
 }
 
 int WJACCEncoder::EncodeBuffer(const unsigned char *pcmBuffer, int length) {
-    LOGI(LOG_TAG, "native层接收到音频数据：size:%d", length);
+    LOGI(LOG_TAG, "native层编码音频数据：size:%d", length);
     uint8_t *outs[2];
     outs[0] = new uint8_t[length];
     outs[1] = new uint8_t[length];

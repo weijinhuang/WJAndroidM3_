@@ -50,6 +50,7 @@ class WJAudioRecordRecorder(context: Activity, filePath: String) {
                 return
             }
             mAudioRecord = AudioRecord(AUDIO_SOURCE, SAMPLE_RATE, CHANNEL, AUDIO_FORMAT, mBufferSize)
+            WJLog.d("创建Java层AudioRecord: SAMPLE_RATE:$SAMPLE_RATE, AUDIO_FORMAT:AudioFormat.ENCODING_PCM_16BIT, mBufferSize:$mBufferSize)")
         }
     }
 
@@ -64,17 +65,13 @@ class WJAudioRecordRecorder(context: Activity, filePath: String) {
                     it.startRecording()
                     mRecording = true
                     mRecordThread = GlobalScope.launch(Dispatchers.IO) {
-//                        val outputStream = FileOutputStream(mPcmPath)
                         val audioBuffer = ByteArray(mBufferSize)
-//                        outputStream.use { os ->
-                            while (isActive && mRecording) {
-                                val audioSampleSize = it.read(audioBuffer, 0, mBufferSize)
-                                if (audioSampleSize > 0) {
-//                                    os.write(audioBuffer)
-                                    mOnAudioRecordListener?.invoke(audioBuffer, audioBuffer.size)
-                                }
+                        while (isActive && mRecording) {
+                            val audioSampleSize = it.read(audioBuffer, 0, mBufferSize)
+                            if (audioSampleSize > 0) {
+                                mOnAudioRecordListener?.invoke(audioBuffer, audioSampleSize)
                             }
-//                        }
+                        }
 
                     }
                     RECORD_STATE.STATE_SUCCESS.value

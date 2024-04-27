@@ -2,15 +2,17 @@ package com.wj.androidm3.business.ui.main.fragment.dashboard
 
 import android.content.Intent
 import android.view.WindowManager
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.common.api.GoogleApi
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.messaging.FirebaseMessaging
 import com.wj.androidm3.R
 import com.wj.androidm3.business.services.BackgroundService
 import com.wj.androidm3.business.ui.conversationincome.PhoneConversationActivity
 import com.wj.androidm3.business.ui.kotlintest.KotlinTestActivity
+import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity
+import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity2
 import com.wj.androidm3.business.ui.media.MediaActivity
 import com.wj.androidm3.databinding.FragmentDashboardBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
@@ -73,6 +75,19 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
             Intent(requireActivity(), MediaActivity::class.java).apply {
                 requireActivity().startActivity(this)
             }
+        },
+        FunctionBean("ViewPager2 Test") {
+            Intent(requireActivity(), ViewPager2NestedActivity::class.java).apply {
+                requireActivity().startActivity(this)
+            }
+        },
+        FunctionBean("ViewPager2 Test2") {
+            Intent(requireActivity(), ViewPager2NestedActivity2::class.java).apply {
+                requireActivity().startActivity(this)
+            }
+        },
+        FunctionBean("Net Test") {
+            findNavController().navigate(R.id.netTestFragment)
         }
     )
 

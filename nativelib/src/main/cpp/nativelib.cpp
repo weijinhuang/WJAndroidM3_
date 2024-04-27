@@ -68,10 +68,15 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_wj_nativelib_WJNativeAudioEncoder_encodeAudioStart(JNIEnv *env, jobject thiz, jstring aac_path) {
     if (nullptr == pAACEncoder) {
-        LOGI(LOG_TAG, "pAACEncoder = nullptr,创建native aac encoder");
+        LOGI(LOG_TAG, "创建native aac encoder -> pAACEncoder = new WJACCEncoder();");
         pAACEncoder = new WJACCEncoder();
         const char *aacPath = env->GetStringUTFChars(aac_path, NULL);
-        pAACEncoder->EncodeStart(aacPath);
+        int ret = pAACEncoder->EncodeStart(aacPath);
+        if (ret < 0) {
+            LOGE(LOG_TAG, "JNI编码初始化失败");
+        } else {
+            LOGI(LOG_TAG, "JNI编码初始化完成");
+        }
     } else {
         LOGI(LOG_TAG, "pAACEncoder != nullptr");
     }

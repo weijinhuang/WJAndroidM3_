@@ -22,4 +22,8 @@
         android:name="com.wj.androidm3.business.ui.main.fragment.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/netTestFragment"
+        android:name="com.wj.androidm3.business.ui.net.NetTestFragment"
+        android:label="NetTestFragment" />
 </navigation>

@@ -7,14 +7,20 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Environment
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import com.wj.androidm3.R
 import com.wj.androidm3.databinding.FragmentAudioBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
+import com.wj.basecomponent.util.BufferConverter
+import com.wj.basecomponent.util.fw.basictype.FWUnsignedInt
+import com.wj.basecomponent.util.fw.basictype.FWUnsignedShort
 import com.wj.basecomponent.util.log.WJLog
 import com.wj.nativelib.*
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.isActive
+import com.wj.nativelib.bean.WaveHeadJava
+import kotlinx.coroutines.*
+import java.io.File
 import java.io.FileOutputStream
+import java.io.RandomAccessFile
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +39,8 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
     private var mRecording = false
 
     private var mWJNativeAudioEncoder: WJNativeAudioEncoder? = null
+
+    private var mAACFileName: String = ""
 
     override fun firstCreateView() {
         mViewBinding?.run {
@@ -159,12 +167,12 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                     checkRecordPermission {
                         if (null == mWJNativeAudioEncoder) {
                             val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-                            val audioFileName =
+                            mAACFileName =
                                 requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
                                     System.currentTimeMillis()
                                 ) + ".aac"
-                            WJLog.d("创建aac：$audioFileName")
-                            mWJNativeAudioEncoder = WJNativeAudioEncoder(requireActivity(), audioFileName)
+                            WJLog.d("创建aac：$mAACFileName")
+                            mWJNativeAudioEncoder = WJNativeAudioEncoder(requireActivity(), mAACFileName)
                         }
                         mWJNativeAudioEncoder?.run {
                             initRecorder()
@@ -177,12 +185,126 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
             }
 
             stopAAcRecord1.setOnClickListener {
-                WJLog.d("停止录制AAC")
+                WJLog.d("停止录制AAC: $mAACFileName")
                 mWJNativeAudioEncoder?.recordStop()
                 mWJNativeAudioEncoder = null
             }
+
+            startRecordWav.setOnClickListener {
+                startRecordWav()
+            }
+
+            stopRecordWav.setOnClickListener {
+                stopRecordWav()
+            }
+            startRecordPCM.setOnClickListener {
+                startRecordPCM()
+            }
+            stopRecordPCM.setOnClickListener {
+                stopRecordPCM()
+            }
+            playPCM.setOnClickListener {
+
+            }
         }
 
+    }
+
+    private var mPCMFileName: String? = null
+    private var mRecordPCMJob: Job? = null
+    private fun startRecordPCM() {
+        initAudioRecord { audioRecord, bufferSize ->
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+            mPCMFileName =
+                requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
+                    System.currentTimeMillis()
+                ) + ".pcm"
+            WJLog.d("创建pcm：$mPCMFileName")
+            audioRecord.startRecording()
+            mRecordPCMJob = lifecycleScope.launch(Dispatchers.IO) {
+                FileOutputStream(mPCMFileName).use { fos ->
+                    val buffer = ByteArray(1024)
+                    while (isActive) {
+                        val readCount = audioRecord.read(buffer, 0, 1024)
+                        if (readCount > 0) {
+                            WJLog.d("data size :$readCount")
+                            fos.write(buffer, 0, readCount)
+                        } else {
+                            fos.flush()
+                            cancel()
+                        }
+                    }
+                    WJLog.i("循环结束")
+                }
+            }
+        }
+    }
+
+    private fun stopRecordPCM() {
+        mRecordPCMJob?.cancel()
+    }
+
+    private var mRecordWaveJob: Job? = null
+    private var mWaveFileName: String? = null
+    private fun startRecordWav() {
+        initAudioRecord { audioRecord, bufferSize ->
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+            mWaveFileName =
+                requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
+                    System.currentTimeMillis()
+                ) + ".wav"
+            WJLog.d("创建wave：$mWaveFileName")
+            audioRecord.startRecording()
+            mRecordWaveJob = lifecycleScope.launch(Dispatchers.IO) {
+                FileOutputStream(mWaveFileName).use { fos ->
+                    fos.write(ByteArray(44), 0, 44)
+                    val buffer = ByteArray(1024)
+                    while (isActive) {
+                        val readCount = audioRecord.read(buffer, 0, 1024)
+                        if (readCount > 0) {
+                            WJLog.d("data size :$readCount")
+                            fos.write(buffer, 0, readCount)
+                        } else {
+                            fos.flush()
+                            cancel()
+                        }
+                    }
+                    WJLog.i("循环结束")
+                }
+            }
+
+        }
+    }
+
+    private fun stopRecordWav() {
+        mRecordWaveJob?.let {
+            it.cancel()
+            lifecycleScope.launch(Dispatchers.IO) {
+                delay(100L)
+
+                val file = File(mWaveFileName)
+
+                val wavHead = WaveHeadJava().apply {
+                    numChannels = FWUnsignedShort(2)
+                    simpleRate = FWUnsignedInt(44100)
+                    bitsPerSample = FWUnsignedShort(16)
+                    blockAlign = FWUnsignedShort(bitsPerSample.value * numChannels.value / 8)
+                    byteRate = FWUnsignedInt(simpleRate.value * blockAlign.value)
+                    dataChunkDataSize = FWUnsignedInt(file.length() - 44)
+                    riffChunkDataSize = FWUnsignedInt(dataChunkDataSize.value + 44 - 8)
+
+                }
+
+                RandomAccessFile(mWaveFileName, "rw").use {
+                    it.seek(0)
+                    val buffer = BufferConverter.getBuffer(wavHead)
+                    WJLog.d(buffer.contentToString())
+                    it.write(buffer)
+                }
+
+                WJLog.i("录制结束：$mWaveFileName")
+            }
+        }
     }
 
     override fun onStop() {
@@ -196,7 +318,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
         mFFMediaRecorder?.DestroyContext()
     }
 
-    private fun initAudioRecord(block: (AudioRecord, Int) -> Unit) {
+    private fun initAudioRecord(block: (audioRecord: AudioRecord, bufferSize: Int) -> Unit) {
         val channelConfig = AudioFormat.CHANNEL_IN_STEREO
         val audioFormat = AudioFormat.ENCODING_PCM_16BIT
         val bufferSize = AudioRecord.getMinBufferSize(mSimpleRate, channelConfig, audioFormat)
