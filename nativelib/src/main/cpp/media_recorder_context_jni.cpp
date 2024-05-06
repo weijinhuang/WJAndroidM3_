@@ -27,20 +27,28 @@ Java_com_wj_nativelib_MediaRecorderContext_Init(JNIEnv *env, jobject thiz) {
     return 0;
 }
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_wj_nativelib_MediaRecorderContext_StartRecord(JNIEnv *env, jobject thiz, jint recorder_type, jstring out_url, jint frame_width,
-                                                       jint frame_height, jint video_bit_rate, jint fps) {
-    const char* url = env->GetStringUTFChars(out_url, nullptr);
-    MediaRecorderContext *pContext = MediaRecorderContext::getContext(env,thiz);
+                                                       jint frame_height, jlong video_bit_rate, jint fps) {
+    const char *url = env->GetStringUTFChars(out_url, nullptr);
+    MediaRecorderContext *pContext = MediaRecorderContext::getContext(env, thiz);
     env->ReleaseStringUTFChars(out_url, url);
-//    if(pContext){
-//        return pContext->
-//    }
+    if (pContext) {
+        return pContext->startRecord(recorder_type, url, frame_width, frame_height, video_bit_rate, fps);
+    }
+    return 0;
 }
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_wj_nativelib_MediaRecorderContext_OnAudioData(JNIEnv *env, jobject thiz, jbyteArray data, jint len) {
-
+    int arrayLen = env->GetArrayLength(data);
+    unsigned char *buf = new unsigned char[len];
+    env->GetByteArrayRegion(data, 0, len, reinterpret_cast<jbyte *>(buf));
+    MediaRecorderContext *pContext = MediaRecorderContext::getContext(env, thiz);
+    if (pContext) {
+        pContext->onAudioData(buf, arrayLen);
+    }
+    delete[] buf;
 }
 extern "C"
 JNIEXPORT void JNICALL
@@ -48,9 +56,12 @@ Java_com_wj_nativelib_MediaRecorderContext_OnPreviewFrame(JNIEnv *env, jobject t
 
 }
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_wj_nativelib_MediaRecorderContext_StopRecord(JNIEnv *env, jobject thiz) {
-
+    MediaRecorderContext *pContext = MediaRecorderContext::getContext(env,thiz);
+    if(pContext){
+        return pContext->stopRecord();
+    }
 }
 extern "C"
 JNIEXPORT void JNICALL

@@ -50,5 +50,61 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/resample_audio" />
 
+
+        <Button
+            android:id="@+id/aacRecord1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="aacRecord1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/push_av" />
+
+        <Button
+            android:id="@+id/stopAAcRecord1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="stopAAcRecord1"
+
+            app:layout_constraintStart_toEndOf="@+id/aacRecord1"
+            app:layout_constraintTop_toBottomOf="@+id/push_av" />
+
+        <Button
+            android:id="@+id/startRecordWav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="StartRecordWav"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/stopAAcRecord1" />
+
+        <Button
+            android:id="@+id/stopRecordWav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="stopRecordWav"
+            app:layout_constraintStart_toEndOf="@+id/startRecordWav"
+            app:layout_constraintTop_toBottomOf="@+id/stopAAcRecord1" />
+
+        <Button
+            android:id="@+id/startRecordPCM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="startRecordPCM"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/startRecordWav" />
+
+        <Button
+            android:id="@+id/stopRecordPCM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="stopRecordPCM"
+            app:layout_constraintStart_toEndOf="@+id/startRecordWav"
+            app:layout_constraintTop_toBottomOf="@+id/startRecordWav" />
+        <Button
+            android:id="@+id/playPCM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="playPCM"
+            app:layout_constraintStart_toEndOf="@+id/startRecordWav"
+            app:layout_constraintTop_toBottomOf="@+id/startRecordWav" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -19,6 +19,8 @@ import com.wj.androidm3.business.services.BackgroundService
 import com.wj.androidm3.business.ui.TestViewActivity
 import com.wj.androidm3.business.ui.conversationincome.PhoneConversationActivity
 import com.wj.androidm3.business.ui.kotlintest.KotlinTestActivity
+import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity
+import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity2
 import com.wj.androidm3.business.ui.media.MediaActivity
 import com.wj.androidm3.business.ui.tabact.TabActivity
 import com.wj.androidm3.databinding.FragmentDashboardBinding
@@ -137,6 +139,19 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
             Intent(requireActivity(), MediaActivity::class.java).apply {
                 requireActivity().startActivity(this)
             }
+        },
+        FunctionBean("ViewPager2 Test") {
+            Intent(requireActivity(), ViewPager2NestedActivity::class.java).apply {
+                requireActivity().startActivity(this)
+            }
+        },
+        FunctionBean("ViewPager2 Test2") {
+            Intent(requireActivity(), ViewPager2NestedActivity2::class.java).apply {
+                requireActivity().startActivity(this)
+            }
+        },
+        FunctionBean("Net Test") {
+            findNavController().navigate(R.id.netTestFragment)
         },
         FunctionBean("showDialog") {
             val title = arrayListOf<String>("base", "tip", "team", "self")

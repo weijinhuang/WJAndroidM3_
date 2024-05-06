@@ -26,6 +26,7 @@ class HomeFragment : BaseMVVMFragment<HomeViewModel, FragmentHomeBinding>() {
             }
         }
         dir()
+        WJLog.d("{NativeLib().ffmpegVersion()->${NativeLib().ffmpegVersion()}")
     }
 
     fun dir() {
