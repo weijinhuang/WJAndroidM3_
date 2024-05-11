@@ -34,4 +34,9 @@
         android:id="@+id/testLongSeViewPage2Fragment"
         android:name="com.wj.androidm3.business.ui.test.TestLongSeViewPage2Fragment"
         android:label="TestLongSeViewPage2Fragment" />
+    <fragment
+        android:id="@+id/cameraTestFragment"
+        android:name="com.wj.androidm3.business.ui.camera.CameraTestFragment"
+        android:label="CameraTestFragment" />
+
 </navigation>

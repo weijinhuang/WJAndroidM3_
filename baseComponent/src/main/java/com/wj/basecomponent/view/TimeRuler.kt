@@ -137,8 +137,8 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
 
     private fun initGestureDetector() {
         mScaleGestureDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.OnScaleGestureListener {
-            override fun onScale(detector: ScaleGestureDetector?): Boolean {
-                WJLog.d("onScale -> ${detector?.scaleFactor}")
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                WJLog.d("onScale -> ${detector.scaleFactor}")
                 return if (mMsInScreen > MAX_MS || mMsInScreen < MIN_MS) {
                     false
                 } else {
@@ -161,7 +161,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
                 }
             }
 
-            override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean {
+            override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
                 detector?.let {
                     WJLog.d("onScaleBegin currentSpan -> ${detector.currentSpan}")
                 }
@@ -169,7 +169,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
                 return true
             }
 
-            override fun onScaleEnd(detector: ScaleGestureDetector?) {
+            override fun onScaleEnd(detector: ScaleGestureDetector) {
                 detector?.let {
                     WJLog.d("onScaleEnd scaleFactor -> ${detector.scaleFactor}")
                 }

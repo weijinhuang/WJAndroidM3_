@@ -25,9 +25,9 @@ object Versions {
 
     val MIN_SDK = 21
 
-    val TARGET_SDK = 32
+    val TARGET_SDK = 33
 
-    val COMPILE_SDK = 32
+    val COMPILE_SDK = 33
 
 
 }

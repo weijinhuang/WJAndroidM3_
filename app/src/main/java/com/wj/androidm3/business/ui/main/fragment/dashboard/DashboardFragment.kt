@@ -17,6 +17,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.wj.androidm3.R
 import com.wj.androidm3.business.services.BackgroundService
 import com.wj.androidm3.business.ui.TestViewActivity
+import com.wj.androidm3.business.ui.camera.CameraTestFragment
+import com.wj.androidm3.business.ui.camera.CameraXActivity
 import com.wj.androidm3.business.ui.conversationincome.PhoneConversationActivity
 import com.wj.androidm3.business.ui.kotlintest.KotlinTestActivity
 import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity
@@ -112,11 +114,13 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
                 val geocoder = Geocoder(requireActivity(), Locale.JAPAN)
                 lastKnownLocation?.let {
 
-                    val fromLocation = geocoder.getFromLocation(it.latitude, it.longitude, 1)
-                    if (fromLocation.isNotEmpty()) {
-                        val address = fromLocation.get(0)
-                        WJLog.i("${address.countryName} ${address.locality} ${address.subLocality}  ")
+                    geocoder.getFromLocation(it.latitude, it.longitude, 1)?.let{fromLocation ->
+                        if (fromLocation.isNotEmpty()) {
+                            val address = fromLocation.get(0)
+                            WJLog.i("${address.countryName} ${address.locality} ${address.subLocality}  ")
+                        }
                     }
+
                 }
             }
 
@@ -168,6 +172,12 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         },
         FunctionBean("testLongSeViewPage2Fragment") {
             findNavController().navigate(R.id.testLongSeViewPage2Fragment)
+        },
+        FunctionBean("CameraX1"){
+            startActivity(Intent(requireActivity(),CameraTestFragment::class.java))
+        },
+        FunctionBean("CameraX2"){
+            startActivity(Intent(requireActivity(),CameraXActivity::class.java))
         }
     )
 
