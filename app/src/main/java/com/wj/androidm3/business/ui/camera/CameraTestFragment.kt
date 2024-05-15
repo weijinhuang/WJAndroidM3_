@@ -3,11 +3,14 @@ package com.wj.androidm3.business.ui.camera
 import android.Manifest
 import android.content.ContentValues
 import android.media.MediaCodec
+import android.media.MediaCodecInfo
 import android.media.MediaFormat
+import android.media.MediaMuxer
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.Surface
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -39,6 +42,7 @@ import com.wj.basecomponent.ui.BaseMVVMActivity
 import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.vm.BaseViewModel
 import kotlinx.coroutines.async
+import java.io.File
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -46,6 +50,14 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBinding>() {
+
+    private var mBitRate = 2000000
+
+    private var FRAME_RATE = 24
+
+    private var IFRAME_INTERVAL = 1
+
+    private var MIME_TYPE = "video/avc"
 
     private var imageCapture: ImageCapture? = null
 
@@ -55,6 +67,66 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
     private lateinit var cameraExecutor: ExecutorService
 
     private val cameraCapabilities = mutableMapOf<CameraSelector, List<Quality>>()
+
+    private var mEncoder: MediaCodec? = null
+
+    private var mMuxer: MediaMuxer? = null
+
+    private var mInputSurface: Surface? = null
+
+    private fun initMuxer(outputFile: String, format: Int, onInitSuccess: (MediaMuxer) -> Unit) {
+        if (mMuxer == null) {
+            mMuxer = MediaMuxer(outputFile, format)
+        }
+        onInitSuccess.invoke(mMuxer!!)
+    }
+
+    private fun prepareEncoder() {
+        mQuality?.let { quality ->
+            val width: Int
+            val height: Int
+            when (quality) {
+                Quality.FHD -> {
+                    width = 1920
+                    height = 1080
+                }
+
+                Quality.HD -> {
+                    width = 1280
+                    height = 720
+                }
+
+                Quality.SD -> {
+                    width = 720
+                    height = 480
+                }
+
+                Quality.UHD -> {
+                    width = 3840
+                    height = 2160
+                }
+
+                else -> {
+                    width = 720
+                    height = 480
+                }
+
+            }
+            val mediaFormat = MediaFormat.createVideoFormat(MIME_TYPE, width, height).apply {
+                setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+                setInteger(MediaFormat.KEY_BIT_RATE, mBitRate)
+                setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE)
+                setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL)
+            }
+
+            mEncoder = MediaCodec.createEncoderByType(MIME_TYPE)?.apply {
+                configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+                mInputSurface = createInputSurface()
+                start()
+            }
+        }
+
+    }
 
     private fun initQualityList() {
         val provider = ProcessCameraProvider.getInstance(this).get()
@@ -73,7 +145,7 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
                         }.also {
                             cameraCapabilities[camSelector] = it
                         }
-                    cameraCapabilities.values.first().let { cameraSelector->
+                    cameraCapabilities.values.first().let { cameraSelector ->
                         mCameraSelector = camSelector
                         mQuality = cameraCapabilities[mCameraSelector]?.first()
                     }
@@ -109,7 +181,7 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
             switchCamera.setOnClickListener {
                 if (mCameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
                     mCameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-                }else{
+                } else {
                     mCameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
                 }
                 bindCamera()
@@ -261,7 +333,8 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
 
             mViewBinding?.viewFinder?.let { previewView ->
                 mQuality?.let { quality ->
-                    val recorder = Recorder.Builder().setQualitySelector(QualitySelector.from(Quality.HIGHEST, FallbackStrategy.higherQualityOrLowerThan(Quality.HD))).build()
+                    val recorder = Recorder.Builder()
+                        .setQualitySelector(QualitySelector.from(Quality.HIGHEST, FallbackStrategy.higherQualityOrLowerThan(Quality.HD))).build()
                     videoCapture = VideoCapture.withOutput(recorder)
 
                     imageCapture = ImageCapture.Builder()
@@ -278,7 +351,7 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
                     }
 
                     processCameraProvider.unbindAll()
-                    processCameraProvider.bindToLifecycle(this@CameraTestFragment, mCameraSelector, preview, imageCapture, videoCapture)
+                    processCameraProvider.bindToLifecycle(this@CameraTestFragment, mCameraSelector, preview, imageCapture, imageAnalyzer)
 
                 }
             }

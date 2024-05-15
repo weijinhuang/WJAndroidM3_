@@ -21,7 +21,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/qualityRv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             app:layout_constraintBottom_toTopOf="@+id/video_capture_button"
             app:layout_constraintEnd_toEndOf="parent" />
 
