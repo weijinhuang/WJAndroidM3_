@@ -241,7 +241,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
 
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         calcPixel()
         canvas?.let {
             if (mOrientationMode == LinearLayout.HORIZONTAL) {

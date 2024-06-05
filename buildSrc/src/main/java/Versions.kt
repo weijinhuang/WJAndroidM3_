@@ -23,11 +23,11 @@ object Versions {
     val APPLICATION_ID_FREE = "com.wj.androidM3Free"
     val ORANGE = "com.acesee.smartorange"
 
-    val MIN_SDK = 21
+    val MIN_SDK = 26
 
     val TARGET_SDK = 33
 
-    val COMPILE_SDK = 33
+    val COMPILE_SDK = 34
 
 
 }

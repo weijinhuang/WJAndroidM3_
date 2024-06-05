@@ -38,5 +38,9 @@
         android:id="@+id/cameraTestFragment"
         android:name="com.wj.androidm3.business.ui.camera.CameraTestFragment"
         android:label="CameraTestFragment" />
+    <fragment
+        android:id="@+id/testDraggableViewFragment"
+        android:name="com.wj.androidm3.business.ui.test.TestDraggableViewFragment"
+        android:label="TestDraggableViewFragment" />
 
 </navigation>

@@ -2,6 +2,7 @@ package com.wj.androidm3.business.ui.camera
 
 import android.Manifest
 import android.content.ContentValues
+import android.graphics.Point
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
@@ -29,6 +30,7 @@ import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
+import androidx.camera.video.VideoRecordEvent.Start
 import androidx.camera.video.VideoSpec
 import androidx.camera.video.internal.encoder.Encoder
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -124,6 +126,7 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
                 mInputSurface = createInputSurface()
                 start()
             }
+
         }
 
     }
@@ -145,9 +148,9 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
                         }.also {
                             cameraCapabilities[camSelector] = it
                         }
-                    cameraCapabilities.values.first().let { cameraSelector ->
+                    cameraCapabilities.values.last().let { cameraSelector ->
                         mCameraSelector = camSelector
-                        mQuality = cameraCapabilities[mCameraSelector]?.first()
+                        mQuality = cameraCapabilities[mCameraSelector]?.last()
                     }
                 }
             } catch (exc: java.lang.Exception) {
@@ -174,7 +177,7 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initQualityList()
+//        initQualityList()
         mViewBinding?.run {
             imageCaptureButton.setOnClickListener { takePhoto() }
             videoCaptureButton.setOnClickListener { captureVideo() }
@@ -184,6 +187,7 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
                 } else {
                     mCameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
                 }
+                mQuality = cameraCapabilities[mCameraSelector]?.last()
                 bindCamera()
             }
         }
@@ -241,6 +245,10 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
                 }
             }
         )
+    }
+
+    private fun captureVideoByMediacodec() {
+        initMediaCodec()
     }
 
     private fun captureVideo() {
@@ -327,23 +335,48 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
     }
 
     private var mCameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
     private var mQuality: Quality? = null
+
+    private fun getMediaSize(): Point {
+        return when (mQuality) {
+            Quality.SD -> Point(720, 480)
+            Quality.HD -> Point(1280, 720)
+            Quality.FHD -> Point(1920, 1080)
+            Quality.UHD -> Point(3840, 2160)
+            else -> Point(0, 0)
+        }
+    }
+
     private fun bindCamera() {
         mCameraProvider?.let { processCameraProvider ->
 
             mViewBinding?.viewFinder?.let { previewView ->
                 mQuality?.let { quality ->
+                    val screenXY = getMediaSize()
+                    WJLog.d("分辨率：${screenXY.x} x ${screenXY.y}")
                     val recorder = Recorder.Builder()
-                        .setQualitySelector(QualitySelector.from(Quality.HIGHEST, FallbackStrategy.higherQualityOrLowerThan(Quality.HD))).build()
+                        .setQualitySelector(QualitySelector.from(Quality.HIGHEST, FallbackStrategy.higherQualityOrLowerThan(quality))).build()
                     videoCapture = VideoCapture.withOutput(recorder)
 
                     imageCapture = ImageCapture.Builder()
                         .build()
 
                     val imageAnalyzer = ImageAnalysis.Builder().build().also {
-                        it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-                            WJLog.d("LuminosityAnalyzer:$luma")
-                        })
+                        it.setAnalyzer(cameraExecutor) { imageProxy ->
+                            val bufferData = imageProxy.planes[0].buffer.toByteArray()
+                            mMediaCodec?.let { mediaCodec ->
+//                                val inputBuffers = mediaCodec.inputBuffers
+//                                mediaCodec.dequeueInputBuffer()
+                                val inputBufferIndex = mediaCodec.dequeueInputBuffer(10000)
+                                if(inputBufferIndex >= 0 ){
+                                    val inputBuffer = mediaCodec.getInputBuffer(inputBufferIndex)
+                                    val toByteArray = inputBuffer?.toByteArray()
+//                                    mediaCodec.queueInputBuffer(inputBufferIndex,0,)
+                                }
+
+                            }
+                        }
                     }
 
                     val preview = Preview.Builder().setTargetAspectRatio(quality.getAspectRatio()).build().apply {
@@ -369,55 +402,51 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
         cameraExecutor.shutdown()
     }
 
-    private class LuminosityAnalyzer(private val listener: (Double) -> Unit) : ImageAnalysis.Analyzer {
-
-        private fun ByteBuffer.toByteArray(): ByteArray {
-            rewind()    // Rewind the buffer to zero
-            val data = ByteArray(remaining())
-            get(data)   // Copy the buffer into a byte array
-            return data // Return the byte array
-        }
-
-        override fun analyze(image: ImageProxy) {
-
-            val buffer = image.planes[0].buffer
-            val data = buffer.toByteArray()
-            val pixels = data.map { it.toInt() and 0xFF }
-            val luma = pixels.average()
-
-            listener(luma)
-
-            image.close()
-        }
+    private fun ByteBuffer.toByteArray(): ByteArray {
+        rewind()    // Rewind the buffer to zero
+        val data = ByteArray(remaining())
+        get(data)   // Copy the buffer into a byte array
+        return data // Return the byte array
     }
 
 
     private var mMediaCodec: MediaCodec? = null
 
     fun initMediaCodec() {
-        mMediaCodec = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_VIDEO_AVC).apply {
-            setCallback(object : MediaCodec.Callback() {
-                override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
+        mQuality?.let { quality ->
 
-                }
+            val mediaSize = getMediaSize()
+            mMediaCodec = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_VIDEO_AVC).apply {
+                setCallback(object : MediaCodec.Callback() {
+                    override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
 
-                override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
+                    }
 
-                }
+                    override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo) {
 
-                override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) {
-                    WJLog.e("MediaCodec onError : ${e.message}")
-                }
+                    }
 
-                override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
-                    WJLog.e("MediaCodec onOutputFormatChanged ")
+                    override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) {
+                        WJLog.e("MediaCodec onError : ${e.message}")
+                    }
 
-                }
-            })
-//            setInputSurface(mViewBinding?.viewFinder?.surfaceProvider?)
+                    override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {
+                        WJLog.e("MediaCodec onOutputFormatChanged ")
 
+                    }
+                })
+                val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mediaSize.x, mediaSize.y)
+                mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, mediaSize.x * mediaSize.y * 5)
+                mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 24)
+                mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible)
+                mediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 5)
+                mediaFormat.setInteger(MediaFormat.KEY_BITRATE_MODE,MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)
+                mediaFormat.setInteger(MediaFormat.KEY_PROFILE,MediaCodecInfo.CodecProfileLevel.AVCProfileHigh)
+                mediaFormat.setInteger(MediaFormat.KEY_LEVEL,MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel31)
+                configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+                start()
+            }
         }
-
 //        val mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, )
     }
 }

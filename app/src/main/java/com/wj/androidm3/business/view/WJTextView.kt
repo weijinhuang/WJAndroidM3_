@@ -21,7 +21,7 @@ class WJTextView : View {
 
     val mPaint = TextPaint()
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         var currentY = 100f
         val currentX = 100f

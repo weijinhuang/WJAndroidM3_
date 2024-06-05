@@ -114,7 +114,7 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
                 val geocoder = Geocoder(requireActivity(), Locale.JAPAN)
                 lastKnownLocation?.let {
 
-                    geocoder.getFromLocation(it.latitude, it.longitude, 1)?.let{fromLocation ->
+                    geocoder.getFromLocation(it.latitude, it.longitude, 1)?.let { fromLocation ->
                         if (fromLocation.isNotEmpty()) {
                             val address = fromLocation.get(0)
                             WJLog.i("${address.countryName} ${address.locality} ${address.subLocality}  ")
@@ -173,12 +173,15 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         FunctionBean("testLongSeViewPage2Fragment") {
             findNavController().navigate(R.id.testLongSeViewPage2Fragment)
         },
-        FunctionBean("CameraX1"){
-            startActivity(Intent(requireActivity(),CameraTestFragment::class.java))
+        FunctionBean("CameraX1") {
+            startActivity(Intent(requireActivity(), CameraTestFragment::class.java))
         },
-        FunctionBean("CameraX2"){
-            startActivity(Intent(requireActivity(),CameraXActivity::class.java))
-        }
+        FunctionBean("CameraX2") {
+            startActivity(Intent(requireActivity(), CameraXActivity::class.java))
+        },
+        FunctionBean("testDraggableView") {
+            findNavController().navigate(R.id.testDraggableViewFragment)
+        },
     )
 
     private fun localeTest() {

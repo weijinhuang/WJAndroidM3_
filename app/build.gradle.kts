@@ -98,6 +98,7 @@ dependencies {
 //    implementation(project(mapOf("path" to ":nativelib")))
 
     implementation(project(mapOf("path" to ":nativelib")))
+    implementation("androidx.graphics:graphics-core:1.0.0")
     Libs.commonDep(this)
 
 }
