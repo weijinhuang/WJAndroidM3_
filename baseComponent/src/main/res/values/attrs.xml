@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <declare-styleable name="IntercomAnimationView">
+        <attr name="intercom_animationview_color" format="color"/>
+        <attr name="intercom_animationview_line_width" format="dimension"/>
+        <attr name="intercom_animationview_line_min_height" format="dimension"/>
+        <attr name="intercom_animationview_line_hold_time" format="integer"/>
+        <attr name="intercom_animationview_line_anim_time" format="integer"/>
+        <attr name="intercom_animationview_line_launcher_delay_time" format="integer"/>
+        <attr name="intercom_animationview_line_launcher_hide_time" format="integer"/>
+    </declare-styleable>
     <declare-styleable name="LongSeViewPage2">
 <!--        <attr name="LongSeViewPage_orientation" format="integer">-->
 <!--            <flag name="HORIZONTAL" value="0" />-->
@@ -26,4 +36,19 @@
     <!--        <attr name="time_ruler_lineSize" format="dimension" />-->
     <!--        <attr name="time_ruler_line_storke_width" format="dimension" />-->
     <!--    </declare-styleable>-->
+    <declare-styleable name="TimeRuler">
+        <attr name="android:textColor" />
+        <attr name="android:textSize" />
+        <attr name="android:orientation" />
+        <attr name="draw_strategy">
+            <flag name="text_first" value="1" />
+            <flag name="scale_first" value="2" />
+        </attr>
+        <attr name="time_order" format="boolean">
+            <flag name="reverse" value="1" />
+            <flag name="positive" value="2" />
+        </attr>
+        <attr name="time_ruler_lineSize" format="dimension" />
+        <attr name="time_ruler_line_storke_width" format="dimension" />
+    </declare-styleable>
 </resources>
