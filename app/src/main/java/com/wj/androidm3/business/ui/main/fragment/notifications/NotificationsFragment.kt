@@ -78,7 +78,7 @@ class NotificationsFragment : Fragment() {
             val endTime = instance.timeInMillis
             val timeBean = TimeBean(startTime, endTime)
             if (i % 2 == 0) {
-                timeBean.color = Color.RED
+                timeBean.mColor = Color.RED
             }
             timeData.add(timeBean)
             WJLog.d("TimeData $i -> ${simpleDateFormat.format(startTime)}:${simpleDateFormat.format(endTime)}")

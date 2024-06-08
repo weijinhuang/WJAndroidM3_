@@ -14,21 +14,12 @@ import java.util.*
 
 /**
  *最大时间数
- */
-const val MAX_MS = 6 * 60 * 60 * 1000
-
-const val MIN_MS = 6 * 60 * 1000
-
-const val TEXT_FIRST = 1
-const val SCALE_FIRST = 2
-
-const val TIME_ORDER_POSITIVE = 2
-const val TIME_ORDER_REVERSE = 1
+ */ 
 
 /**
  * 时间刻度尺
  */
-class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : View(context, attrs, defStyleAttr) {
+class TimeRuler2(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : View(context, attrs, defStyleAttr) {
 
     private var mTimeZone = TimeZone.getTimeZone("GMT+08:00")
 
@@ -42,16 +33,12 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
     private var mPixelPerMS = 0f//1毫秒的像素长度
     private var mMSPerPixel = 0//1像素的毫秒数
 
-    private var mTextMargin = 10f
-
     private var mDrawStrategy = TEXT_FIRST
 
     var mFirstScaleTime = 0L
 
-    private var mLineHeight = 10f
+    private var mLineSize = 10f
     private var mLineStrokeWidth = 3f
-
-    private var mTimeDataHeight = 10f
 
     private var mLeftTime = 0L
     private var mLeftTimeTemp = 0L
@@ -102,10 +89,8 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
                     mTextColor = obtainStyledAttributes.getColor(R.styleable.TimeRuler_android_textColor, Color.BLACK)
                     mDrawStrategy = obtainStyledAttributes.getInt(R.styleable.TimeRuler_draw_strategy, TEXT_FIRST)
                     mTextSize = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_android_textSize, 16)
-                    mLineHeight = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_time_ruler_line_height, 10).toFloat()
+                    mLineSize = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_time_ruler_line_height, 10).toFloat()
                     mLineStrokeWidth = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_time_ruler_line_width, 3).toFloat()
-                    mTextMargin = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_time_ruler_text_margin, 5).toFloat()
-                    mTimeDataHeight = obtainStyledAttributes.getDimensionPixelSize(R.styleable.TimeRuler_time_ruler_data_height, 10).toFloat()
                     mOrientationMode = obtainStyledAttributes.getInt(R.styleable.TimeRuler_android_orientation, LinearLayout.HORIZONTAL)
                     mTimeOrder = obtainStyledAttributes.getInt(R.styleable.TimeRuler_time_order, TIME_ORDER_REVERSE)
                     mPaint.color = mTextColor
@@ -250,7 +235,6 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
                 mMiddleTimeTemp = mMiddleTime
                 mFirstTouchPoint.set(event.x, event.y)
             }
-
             MotionEvent.ACTION_MOVE -> {
                 if (event.pointerCount >= 2) {
 //                    LogUtils.d("mScaleGestureDetector?.onTouchEvent(event)")
@@ -262,10 +246,8 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
                     }
                 }
             }
-
             MotionEvent.ACTION_POINTER_UP -> {
             }
-
             MotionEvent.ACTION_UP -> {
 //                LogUtils.d("selected time -> ${mLeftTime + (mMsInScreen shr 1)}")
                 if (!mScaleEnable) {
@@ -342,19 +324,15 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
             MIN_MS -> {// 6分钟
                 mScaleMsStep = 12000
             }
-
             in MIN_MS..30 * 60 * 1000 -> {//6到30分钟
                 mScaleMsStep = 60000
             }
-
             in 30 * 60 * 1000..90 * 60 * 1000 -> {//30到90分钟
                 mScaleMsStep = 180000
             }
-
             in 90 * 60 * 1000..180 * 60 * 1000 -> {//1个半小时到3个小时
                 mScaleMsStep = 360000
             }
-
             in 180 * 60 * 1000..MAX_MS -> {//3小时到6小时
                 mScaleMsStep = 720000
             }
@@ -392,17 +370,16 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
             smallScaleStopY = bigScaleStopY * 0.7f
 
         } else {
-            scaleStartY = height.toFloat()
-            smallScaleStopY = scaleStartY - mLineHeight
-            bigScaleStopY = scaleStartY - mLineHeight * 3
-            textY = height - mLineHeight * 3 - mTextMargin
-
+            textY = mTextSize.toFloat()
+            scaleStartY = mTextSize * 1.5f
+            bigScaleStopY = height.toFloat()
+            smallScaleStopY = bigScaleStopY * 0.7f
         }
 
 //        LogUtils.d("mFirstScaleTime:${mSimpleDateFormatFull.format(mFirstScaleTime)}")
         while (scaleX < rightBound && scaleX > leftBound) {
-            val drawText = mFirstScaleTime % mTimeTextStep == 0L
-            if (drawText) {
+            val fl = mFirstScaleTime % mTimeTextStep
+            if (fl == 0L) {
                 val timeText = mSimpleDateFormat.format(mFirstScaleTime)
                 canvas.drawText(timeText, scaleX - (mTextWidth shr 1), textY, mPaint)
                 mPaint.strokeWidth = mLineStrokeWidth * 1.5f
@@ -425,8 +402,7 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
         val startBound = -mTextSize
         val endBound = height + mTextSize
 
-        var scaleY =
-            if (mTimeOrder == TIME_ORDER_POSITIVE) (mFirstScaleTime - mLeftTime) * mPixelPerMS else (mLeftTime - mFirstScaleTime) * mPixelPerMS
+        var scaleY = if (mTimeOrder == TIME_ORDER_POSITIVE) (mFirstScaleTime - mLeftTime) * mPixelPerMS else (mLeftTime - mFirstScaleTime) * mPixelPerMS
         var smallScaleStartX: Float
         var bigScaleStartX: Float
         var textX: Float
@@ -487,9 +463,9 @@ class TimeRuler(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : Vi
             if (mDrawStrategy == SCALE_FIRST) {
                 top = 0f
                 bottom = (height - mTextSize * 2f) * 0.7f
-            } else {//TEXT_FIRST
-                top = 0F
-                bottom = mTimeDataHeight
+            } else {
+                top = mTextSize * 1.5f
+                bottom = height.toFloat() * 0.7f
             }
             if (right - left < 5) {
                 right = left + 5

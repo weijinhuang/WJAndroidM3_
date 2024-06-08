@@ -17,13 +17,35 @@
     <com.wj.basecomponent.view.TimeRuler
         android:id="@+id/time_ruler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black"
+        android:layout_height="80dp"
+        android:background="#dddddd"
+        app:time_ruler_data_height="10dp"
         android:orientation="horizontal"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:draw_strategy="text_first"
+        app:layout_constraintTop_toBottomOf="@+id/sw_drawOverlays"
+        app:time_order="positive"
+        app:time_ruler_line_height="5dp"
+        app:time_ruler_text_margin="15dp"
+        app:time_ruler_line_width="1dp"
+        tools:layout_editor_absoluteX="1dp" />
+
+
+    <com.wj.basecomponent.view.TimeRuler
+        android:id="@+id/time_ruler2"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        android:background="@color/black"
+        android:orientation="vertical"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/sw_drawOverlays"
-         />
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time_ruler"
+        app:time_order="positive"
+        tools:layout_editor_absoluteX="1dp" />
 
     <TextView
         android:id="@+id/text_notifications"

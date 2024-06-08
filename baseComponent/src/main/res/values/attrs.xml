@@ -48,7 +48,9 @@
             <flag name="reverse" value="1" />
             <flag name="positive" value="2" />
         </attr>
-        <attr name="time_ruler_lineSize" format="dimension" />
-        <attr name="time_ruler_line_storke_width" format="dimension" />
+        <attr name="time_ruler_line_height" format="dimension" />
+        <attr name="time_ruler_line_width" format="dimension" />
+        <attr name="time_ruler_text_margin" format="dimension" />
+        <attr name="time_ruler_data_height" format="dimension"/>
     </declare-styleable>
 </resources>
