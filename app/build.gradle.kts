@@ -99,6 +99,8 @@ dependencies {
 
     implementation(project(mapOf("path" to ":nativelib")))
     implementation("androidx.graphics:graphics-core:1.0.0")
+//    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+//    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     Libs.commonDep(this)
 
 }

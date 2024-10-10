@@ -18,11 +18,9 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.FallbackStrategy
-import androidx.camera.video.MediaSpec
 import androidx.camera.video.MediaStoreOutputOptions
 import androidx.camera.video.Quality
 import androidx.camera.video.QualitySelector
@@ -30,21 +28,13 @@ import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
-import androidx.camera.video.VideoRecordEvent.Start
-import androidx.camera.video.VideoSpec
-import androidx.camera.video.internal.encoder.Encoder
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.whenCreated
 import com.wj.androidm3.R
 import com.wj.androidm3.databinding.FragmentCameraTestBinding
 import com.wj.basecomponent.ui.BaseMVVMActivity
 import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.vm.BaseViewModel
-import kotlinx.coroutines.async
-import java.io.File
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -177,7 +167,7 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        initQualityList()
+        initQualityList()
         mViewBinding?.run {
             imageCaptureButton.setOnClickListener { takePhoto() }
             videoCaptureButton.setOnClickListener { captureVideo() }
@@ -308,7 +298,7 @@ class CameraTestFragment : BaseMVVMActivity<BaseViewModel, FragmentCameraTestBin
     }
 
     fun test() {
-        val input: Encoder.EncoderInput
+//        val input: Encoder.EncoderInput
 //        val encoderFinder = EncoderFinder()
     }
 

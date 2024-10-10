@@ -28,14 +28,16 @@ abstract class BaseMVVMFragment<VM : BaseViewModel, VDB : ViewDataBinding> : Bas
             mRootView = mViewBinding?.root
             firstCreateView()
         }
-        mRootView?.let {rootView->
+        mRootView?.let { rootView ->
             val p = rootView.parent
-            if(p is ViewGroup){
+            if (p is ViewGroup) {
                 p.removeAllViews()
             }
         }
         return mRootView
     }
+
+
 
     fun bindView(inflater: LayoutInflater, container: ViewGroup?) {
         mViewBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)

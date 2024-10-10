@@ -182,6 +182,15 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         FunctionBean("testDraggableView") {
             findNavController().navigate(R.id.testDraggableViewFragment)
         },
+        FunctionBean("bleTestFragment") {
+            findNavController().navigate(R.id.bleTestFragment)
+        },
+        FunctionBean("RecyclerViewTestFragment") {
+            findNavController().navigate(R.id.recyclerViewPractiseFragment)
+        },
+        FunctionBean("Camera2PreViewFragment") {
+            findNavController().navigate(R.id.camera2PreviewFragment)
+        },
     )
 
     private fun localeTest() {

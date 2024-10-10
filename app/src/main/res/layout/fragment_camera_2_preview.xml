@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="viewModel"
+            type="com.wj.androidm3.business.ui.camera.Camera2ViewModel" />
 
     </data>
 

@@ -14,7 +14,7 @@ class MediaViewModel : BaseViewModel() {
         File(WJApplication.getInstance().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + fileName)
 
     fun createAACAudioFile(): File {
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
         return File(
             "${WJApplication.getInstance().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path}/${simpleDateFormat.format(System.currentTimeMillis())}.aac"
         )

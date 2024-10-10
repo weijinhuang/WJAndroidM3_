@@ -5,21 +5,17 @@ import android.content.ContentValues
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.CameraProvider
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.wj.androidm3.R
@@ -29,8 +25,6 @@ import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.vm.BaseViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
-import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -88,6 +82,7 @@ class CameraXActivity : BaseMVVMActivity<BaseViewModel, ActivityCameraXBinding>(
                 outputCount++
                 WJLog.d("启用分析器 outputCount:$outputCount")
                 mImageAnalysis.setAnalyzer(mExecutors) { imageProxy ->
+                    WJLog.d("imageProxy.planes.size:${imageProxy.planes.size}")
                     if (mTakeOneYuv) {
                         mTakeOneYuv = false
                         WJLog.d("旋转角度:${imageProxy.imageInfo.rotationDegrees}")

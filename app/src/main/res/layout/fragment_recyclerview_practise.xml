@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="12dp"
+            app:layout_constraintBottom_toTopOf="@+id/modifyData"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/modifyData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="modifyData"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/addData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="addData"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/modifyData" />
+
+        <Button
+            android:id="@+id/removeData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="removeData"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/addData" />
+
+        <Button
+            android:id="@+id/removeAndModify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="removeAndModify"
+            app:layout_constraintBottom_toTopOf="@+id/modifyData"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/swap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="swap"
+            app:layout_constraintBottom_toTopOf="@+id/modifyData"
+            app:layout_constraintStart_toEndOf="@+id/removeAndModify"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

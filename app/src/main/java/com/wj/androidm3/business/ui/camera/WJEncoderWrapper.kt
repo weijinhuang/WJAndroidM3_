@@ -27,17 +27,17 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.view.Surface
-
-
+import com.wj.androidm3.business.ui.camera.EncoderWrapper.Companion.VIDEO_CODEC_ID_AV1
+import com.wj.androidm3.business.ui.camera.EncoderWrapper.Companion.VIDEO_CODEC_ID_H264
+import com.wj.androidm3.business.ui.camera.EncoderWrapper.Companion.VIDEO_CODEC_ID_HEVC
 import java.io.File
-import java.io.IOException
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
 
 /**
  * Encodes video by streaming to disk.
  */
-class EncoderWrapper(width: Int,
+class WJEncoderWrapper(width: Int,
                      height: Int,
                      bitRate: Int,
                      frameRate: Int,
@@ -46,7 +46,11 @@ class EncoderWrapper(width: Int,
                      outputFile: File,
                      useMediaRecorder: Boolean,
                      videoCodec: Int) {
-
+    companion object {
+        val TAG = "EncoderWrapper"
+        val VERBOSE = true
+        val IFRAME_INTERVAL = 1 // sync one frame every second
+    }
 
     private val mWidth = width
     private val mHeight = height
@@ -109,11 +113,11 @@ class EncoderWrapper(width: Int,
 
             val videoEncoder = when (mVideoCodec) {
                 VIDEO_CODEC_ID_H264 ->
-                        MediaRecorder.VideoEncoder.H264
+                    MediaRecorder.VideoEncoder.H264
                 VIDEO_CODEC_ID_HEVC ->
-                        MediaRecorder.VideoEncoder.HEVC
+                    MediaRecorder.VideoEncoder.HEVC
                 VIDEO_CODEC_ID_AV1 ->
-                        MediaRecorder.VideoEncoder.AV1
+                    MediaRecorder.VideoEncoder.AV1
                 else -> throw IllegalArgumentException("Unknown video codec id")
             }
 
@@ -136,20 +140,20 @@ class EncoderWrapper(width: Int,
             val codecProfile = when (mVideoCodec) {
                 VIDEO_CODEC_ID_HEVC -> when {
                     dynamicRange == DynamicRangeProfiles.HLG10 ->
-                            MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10
+                        MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10
                     dynamicRange == DynamicRangeProfiles.HDR10 ->
-                            MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10HDR10
+                        MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10HDR10
                     dynamicRange == DynamicRangeProfiles.HDR10_PLUS ->
-                            MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10HDR10Plus
+                        MediaCodecInfo.CodecProfileLevel.HEVCProfileMain10HDR10Plus
                     else -> -1
                 }
                 VIDEO_CODEC_ID_AV1 -> when {
                     dynamicRange == DynamicRangeProfiles.HLG10 ->
-                            MediaCodecInfo.CodecProfileLevel.AV1ProfileMain10
+                        MediaCodecInfo.CodecProfileLevel.AV1ProfileMain10
                     dynamicRange == DynamicRangeProfiles.HDR10 ->
-                            MediaCodecInfo.CodecProfileLevel.AV1ProfileMain10HDR10
+                        MediaCodecInfo.CodecProfileLevel.AV1ProfileMain10HDR10
                     dynamicRange == DynamicRangeProfiles.HDR10_PLUS ->
-                            MediaCodecInfo.CodecProfileLevel.AV1ProfileMain10HDR10Plus
+                        MediaCodecInfo.CodecProfileLevel.AV1ProfileMain10HDR10Plus
                     else -> -1
                 }
                 else -> -1
@@ -160,7 +164,7 @@ class EncoderWrapper(width: Int,
             // Set some properties.  Failing to specify some of these can cause the MediaCodec
             // configure() call to throw an unhelpful exception.
             format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                    MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
             format.setInteger(MediaFormat.KEY_BIT_RATE, bitRate)
             format.setInteger(MediaFormat.KEY_FRAME_RATE, frameRate)
             format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL)
@@ -178,35 +182,6 @@ class EncoderWrapper(width: Int,
             // Create a MediaCodec encoder, and configure it with our format.  Get a Surface
             // we can use for input and wrap it with a class that handles the EGL work.
             mEncoder!!.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
-        }
-    }
-
-    companion object{
-
-        val TAG = "EncoderWrapper"
-        val VERBOSE = true
-        val IFRAME_INTERVAL = 1 // sync one frame every second
-
-        private data class VideoCodecInfo(
-            val name: String,
-            val id: Int)
-
-        public const val VIDEO_CODEC_ID_HEVC: Int = 0
-        public const val VIDEO_CODEC_ID_H264: Int = 1
-        public const val VIDEO_CODEC_ID_AV1: Int = 2
-
-        public fun idToStr(videoCodecId: Int): String = when (videoCodecId) {
-            VIDEO_CODEC_ID_HEVC -> "HEVC"
-            VIDEO_CODEC_ID_H264 -> "H264"
-            VIDEO_CODEC_ID_AV1 -> "AV1"
-            else -> throw RuntimeException("Unexpected video codec id " + videoCodecId)
-        }
-
-        public fun idToType(videoCodecId: Int): String = when (videoCodecId) {
-            VIDEO_CODEC_ID_H264 -> MediaFormat.MIMETYPE_VIDEO_AVC
-            VIDEO_CODEC_ID_HEVC -> MediaFormat.MIMETYPE_VIDEO_HEVC
-            VIDEO_CODEC_ID_AV1 -> MediaFormat.MIMETYPE_VIDEO_AV1
-            else -> throw RuntimeException("Unexpected video codec id " + videoCodecId)
         }
     }
 
@@ -284,7 +259,7 @@ class EncoderWrapper(width: Int,
         if (!mUseMediaRecorder) {
             val handler = mEncoderThread!!.getHandler()
             handler.sendMessage(handler.obtainMessage(
-                    EncoderThread.EncoderHandler.MSG_FRAME_AVAILABLE))
+                EncoderThread.EncoderHandler.MSG_FRAME_AVAILABLE))
         }
     }
 

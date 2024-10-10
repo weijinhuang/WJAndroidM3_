@@ -14,7 +14,7 @@ abstract class Pipeline(
     val filterOn: Boolean,
     val dynamicRange: Long,
     val characteristics: CameraCharacteristics,
-    encoder: EncoderWrapper,
+    encoder: WJEncoderWrapper,
     viewFinder: AutoFitSurfaceView
 ) {
     open fun createPreviewRequest(session: CameraCaptureSession, previewStabilization: Boolean): CaptureRequest? {

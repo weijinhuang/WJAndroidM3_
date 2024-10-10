@@ -43,4 +43,18 @@
         android:name="com.wj.androidm3.business.ui.test.TestDraggableViewFragment"
         android:label="TestDraggableViewFragment" />
 
+    <fragment
+        android:id="@+id/bleTestFragment"
+        android:name="com.wj.androidm3.business.ui.test.BLETestFragment"
+        android:label="TestFragment" />
+    <fragment
+        android:id="@+id/recyclerViewPractiseFragment"
+        android:name="com.wj.androidm3.business.ui.recyclerview.RecyclerViewPractiseFragment"
+        android:label="RecyclerViewPractiseFragment" />
+    <fragment
+        android:id="@+id/camera2PreviewFragment"
+        android:name="com.wj.androidm3.business.ui.camera.Camera2PreviewFragment"
+        android:label="Camera2PreviewFragment" />
+
+
 </navigation>
