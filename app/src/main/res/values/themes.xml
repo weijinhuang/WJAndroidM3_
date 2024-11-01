@@ -15,4 +15,18 @@
     <style name="Theme.WJAndroidM3.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.WJAndroidM3.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <style name="MyTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+        <!--    <style name="MyTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+        <item name="colorAccent">#242A38</item>
+        <item name="android:colorAccent" tools:ignore="NewApi">#242A38</item>
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimaryDark">@android:color/white</item>
+        <!-- <item name="android:windowTranslucentStatus">true</item>
+         <item name="android:windowIsTranslucent">true</item> -->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <!--        <item name="android:windowBackground">@android:color/transparent</item>-->
+    </style>
 </resources>

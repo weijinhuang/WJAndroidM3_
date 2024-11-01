@@ -2,6 +2,7 @@ package com.wj.basecomponent.vm
 
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
@@ -34,4 +35,6 @@ open class BaseViewModel : ViewModel(), Observable {
     fun notifyPropertyChanged(fieldId: Int) {
         mPropertyChangeRegistry.notifyCallbacks(this, fieldId, null)
     }
+
+    val mErrorMD = MutableLiveData<String?>(null)
 }

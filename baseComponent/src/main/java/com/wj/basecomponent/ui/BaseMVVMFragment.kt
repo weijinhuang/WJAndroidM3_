@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
@@ -37,7 +38,15 @@ abstract class BaseMVVMFragment<VM : BaseViewModel, VDB : ViewDataBinding> : Bas
         return mRootView
     }
 
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mViewModel.mErrorMD.observe(this){errorMsg->
+            errorMsg?.let {
+                Toast.makeText(requireContext(),it,Toast.LENGTH_SHORT).show()
+                mViewModel.mErrorMD.postValue(null)
+            }
+        }
+    }
 
     fun bindView(inflater: LayoutInflater, container: ViewGroup?) {
         mViewBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)

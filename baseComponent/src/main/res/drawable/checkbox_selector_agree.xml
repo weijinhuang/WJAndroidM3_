@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_checkbox_disable" android:state_enabled="false" />
+    <item android:state_enabled="true">
+        <selector>
+            <item android:drawable="@drawable/ic_hs_common_checkbox_uncheck" android:state_checked="false" />
+            <item android:drawable="@drawable/checkbox_checked" android:state_checked="true" />
+        </selector>
+    </item>
+
+
+</selector>

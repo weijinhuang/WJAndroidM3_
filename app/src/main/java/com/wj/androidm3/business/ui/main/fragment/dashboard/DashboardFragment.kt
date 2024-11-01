@@ -42,6 +42,9 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
     }
 
     private val mFunctionList = listOf(
+        FunctionBean("calcChargeTime") {
+            findNavController().navigate(R.id.calcChargeTimeFragment)
+        },
         FunctionBean("StartNormalService") {
             val serviceIntent = Intent(requireActivity(), BackgroundService::class.java)
             requireActivity().startService(serviceIntent)

@@ -4,7 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.customview.widget.ViewDragHelper
 import com.wj.basecomponent.util.log.WJLog.Companion.d
 
@@ -35,7 +37,11 @@ class DraggableWithHelperView : FrameLayout {
     private inner class DragCallback : ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int): Boolean {
             d("--tryCaptureView:$pointerId:Int")
-            return true
+            if (child is TextView) {
+                if (child.text == "2")
+                    return true
+            }
+            return false
         }
 
         override fun onViewDragStateChanged(state: Int) {
@@ -46,6 +52,7 @@ class DraggableWithHelperView : FrameLayout {
         override fun onViewPositionChanged(changedView: View, left: Int, top: Int, dx: Int, dy: Int) {
             super.onViewPositionChanged(changedView, left, top, dx, dy)
             d("--onViewPositionChanged(changedView, left:$left, top:$top, x:$dx, y:$dy)")
+            changedView.layout(left, top, left + changedView.width, top + changedView.height)
         }
 
         override fun onViewCaptured(capturedChild: View, activePointerId: Int) {
@@ -80,12 +87,12 @@ class DraggableWithHelperView : FrameLayout {
 
         override fun getViewHorizontalDragRange(child: View): Int {
             d("-- getViewHorizontalDragRange($child: Int)")
-            return super.getViewHorizontalDragRange(child)
+            return width
         }
 
         override fun getViewVerticalDragRange(child: View): Int {
             d("-- getViewVerticalDragRange($child: Int)")
-            return super.getViewVerticalDragRange(child)
+            return height
         }
 
         override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {

@@ -42,6 +42,10 @@
         android:id="@+id/testDraggableViewFragment"
         android:name="com.wj.androidm3.business.ui.test.TestDraggableViewFragment"
         android:label="TestDraggableViewFragment" />
+    <fragment
+        android:id="@+id/calcChargeTimeFragment"
+        android:name="com.wj.androidm3.business.ui.main.fragment.CalcChargeTimeFragment"
+        android:label="CalcChargeTimeFragment" />
 
     <fragment
         android:id="@+id/bleTestFragment"

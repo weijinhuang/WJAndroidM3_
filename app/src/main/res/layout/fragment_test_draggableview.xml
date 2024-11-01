@@ -5,25 +5,26 @@
 
     </data>
 
-    <com.wj.basecomponent.view.DraggableWithHelperView
+    <com.wj.basecomponent.view.FloatLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:text="1"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:layout_width="150dp"
-            android:layout_height="100dp"
-            android:background="@color/black" />
         <TextView
             android:text="2"
             android:gravity="center"
             android:textColor="@color/white"
             android:layout_width="150dp"
-            android:layout_marginTop="100dp"
             android:layout_height="100dp"
             android:background="@android:color/holo_green_dark" />
+        <TextView
+            android:text="1"
+            android:contentDescription="draggable"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="100dp"
+            android:background="@color/black" />
 
-    </com.wj.basecomponent.view.DraggableWithHelperView>
+    </com.wj.basecomponent.view.FloatLayout>
 </layout>

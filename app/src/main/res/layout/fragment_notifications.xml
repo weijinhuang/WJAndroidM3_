@@ -15,6 +15,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.wj.basecomponent.view.TimeRuler
+        app:layout_constraintTop_toBottomOf="@+id/sw_drawOverlays"
         android:id="@+id/time_ruler"
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -24,7 +25,6 @@
         android:textColor="@color/black"
         android:textSize="16sp"
         app:draw_strategy="text_first"
-        app:layout_constraintTop_toBottomOf="@+id/sw_drawOverlays"
         app:time_order="positive"
         app:time_ruler_line_height="5dp"
         app:time_ruler_text_margin="15dp"

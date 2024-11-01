@@ -6,10 +6,27 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:button="@drawable/checkbox_selector_agree" />
+
+            <CheckBox
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:button="@drawable/checkbox_selector_agree"
+                android:enabled="false" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <com.wj.androidm3.business.view.WJTextView
             android:layout_width="match_parent"
@@ -18,8 +35,175 @@
 
         <com.wj.basecomponent.view.TimeRuler
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="30dp"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginVertical="10dp" />
+
+        <TextView
+            android:id="@+id/addProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="addProgress" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/black"
+            android:orientation="horizontal"
+            android:paddingTop="5dp">
+
+<!--            <com.wj.basecomponent.view.IntercomAnimationView-->
+<!--                android:layout_width="10dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                app:intercom_animationview_line_anim_time="500"-->
+<!--                app:intercom_animationview_line_hold_time="1200"-->
+<!--                app:intercom_animationview_line_launcher_delay_time="0"-->
+<!--                app:intercom_animationview_line_launcher_hide_time="0"-->
+<!--                app:intercom_animationview_line_min_height="10dp"-->
+<!--                app:intercom_animationview_line_width="5dp" />-->
+
+<!--            <com.wj.basecomponent.view.IntercomAnimationView-->
+<!--                android:layout_width="10dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                app:intercom_animationview_line_anim_time="500"-->
+<!--                app:intercom_animationview_line_hold_time="1000"-->
+<!--                app:intercom_animationview_line_launcher_delay_time="200"-->
+<!--                app:intercom_animationview_line_launcher_hide_time="200"-->
+<!--                app:intercom_animationview_line_min_height="10dp"-->
+<!--                app:intercom_animationview_line_width="5dp" />-->
+
+<!--            <com.wj.basecomponent.view.IntercomAnimationView-->
+<!--                android:layout_width="10dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                app:intercom_animationview_line_anim_time="500"-->
+<!--                app:intercom_animationview_line_hold_time="800"-->
+<!--                app:intercom_animationview_line_launcher_delay_time="400"-->
+<!--                app:intercom_animationview_line_launcher_hide_time="400"-->
+<!--                app:intercom_animationview_line_min_height="10dp"-->
+<!--                app:intercom_animationview_line_width="5dp" />-->
+
+<!--            <com.wj.basecomponent.view.IntercomAnimationView-->
+<!--                android:layout_width="10dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                app:intercom_animationview_line_anim_time="500"-->
+<!--                app:intercom_animationview_line_hold_time="600"-->
+<!--                app:intercom_animationview_line_launcher_delay_time="600"-->
+<!--                app:intercom_animationview_line_launcher_hide_time="600"-->
+<!--                app:intercom_animationview_line_min_height="10dp"-->
+<!--                app:intercom_animationview_line_width="5dp" />-->
+
+<!--            <com.wj.basecomponent.view.IntercomAnimationView-->
+<!--                android:layout_width="10dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                app:intercom_animationview_line_anim_time="500"-->
+<!--                app:intercom_animationview_line_hold_time="400"-->
+<!--                app:intercom_animationview_line_launcher_delay_time="800"-->
+<!--                app:intercom_animationview_line_launcher_hide_time="800"-->
+<!--                app:intercom_animationview_line_min_height="10dp"-->
+<!--                app:intercom_animationview_line_width="5dp" />-->
+
+<!--            <com.wj.basecomponent.view.IntercomAnimationView-->
+<!--                android:layout_width="10dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                app:intercom_animationview_line_anim_time="500"-->
+<!--                app:intercom_animationview_line_hold_time="200"-->
+<!--                app:intercom_animationview_line_launcher_delay_time="1000"-->
+<!--                app:intercom_animationview_line_launcher_hide_time="1000"-->
+<!--                app:intercom_animationview_line_min_height="10dp"-->
+<!--                app:intercom_animationview_line_width="5dp" />-->
+
+<!--            <com.wj.basecomponent.view.IntercomAnimationView-->
+<!--                android:layout_width="10dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                app:intercom_animationview_line_anim_time="500"-->
+<!--                app:intercom_animationview_line_hold_time="0"-->
+<!--                app:intercom_animationview_line_launcher_delay_time="1200"-->
+<!--                app:intercom_animationview_line_launcher_hide_time="1200"-->
+<!--                app:intercom_animationview_line_min_height="10dp"-->
+<!--                app:intercom_animationview_line_width="5dp" />-->
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/black"
+            android:orientation="horizontal"
+            android:paddingTop="5dp">
+
+            <View
+
+                android:id="@+id/line1"
+                android:layout_width="4dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/line_round" />
+
+            <View
+                android:id="@+id/line2"
+                android:layout_width="4dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/line_round" />
+
+            <View
+                android:id="@+id/line3"
+                android:layout_width="4dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/line_round" />
+
+            <View
+                android:id="@+id/line4"
+                android:layout_width="4dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/line_round" />
+
+            <View
+                android:id="@+id/line5"
+                android:layout_width="4dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/line_round" />
+
+            <View
+                android:id="@+id/line6"
+                android:layout_width="4dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/line_round" />
+
+            <View
+                android:id="@+id/line7"
+                android:layout_width="4dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:background="@drawable/line_round" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/startAnim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="startAnim"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
 </layout>

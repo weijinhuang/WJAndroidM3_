@@ -12,9 +12,11 @@
     </data>
 
     <LinearLayout
+        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="#fefecd"
         tools:context=".business.ui.main.fragment.home.HomeFragment">
 
         <TextView

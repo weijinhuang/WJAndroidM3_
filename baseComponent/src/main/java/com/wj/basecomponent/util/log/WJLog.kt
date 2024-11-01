@@ -12,13 +12,16 @@ class WJLog {
         val ENABLE = true
 
         fun d(msg: String) {
+            Timber.tag(TAG)
             Timber.d(msg)
         }
         fun e(msg: String) {
+            Timber.tag(TAG)
             Timber.e(msg)
         }
 
         fun i(msg: String) {
+            Timber.tag(TAG)
             Timber.i(msg)
         }
 
