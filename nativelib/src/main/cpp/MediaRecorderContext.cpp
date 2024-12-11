@@ -15,6 +15,7 @@ MediaRecorderContext::~MediaRecorderContext() {
 
 void MediaRecorderContext::createContext(JNIEnv *env, jobject instance) {
     MediaRecorderContext *pContext = new MediaRecorderContext();
+    LOGI(LOG_TAG,"create Native MediaRecorderContext()");
     storeContext(env, instance, pContext);
 }
 

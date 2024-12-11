@@ -37,6 +37,8 @@ object Libs {
 
 
             implementation ("com.polidea.rxandroidble3:rxandroidble:1.18.1")
+
+            implementation("com.tencent.bugly:crashreport:4.1.9.3")
         }
     }
 

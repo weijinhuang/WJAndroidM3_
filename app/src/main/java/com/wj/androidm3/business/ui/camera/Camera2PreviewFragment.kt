@@ -371,6 +371,7 @@ class Camera2PreviewFragment : BaseMVVMFragment<Camera2ViewModel, FragmentCamera
                                                 session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult
                                             ) {
                                                 if (isCurrentlyRecording()) {
+                                                    WJLog.d("encoder.frameAvailable()")
                                                     encoder.frameAvailable()
                                                 }
                                             }

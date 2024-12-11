@@ -17,6 +17,9 @@ int WJACCEncoder::EncodeFrame(AVCodecContext *pCodecCtx, AVFrame *pFrame) {
         ret = av_interleaved_write_frame(pFormatCtx, &audioPacket);
         if (ret == 0) {
             LOGI(LOG_TAG, "帧数据编码成功");
+        }else{
+            LOGE(LOG_TAG,"幀數據編碼失敗,%d", ret);
+
         }
         av_packet_unref(&audioPacket);
     }

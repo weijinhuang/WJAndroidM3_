@@ -30,6 +30,7 @@ import android.view.Surface
 import com.wj.androidm3.business.ui.camera.EncoderWrapper.Companion.VIDEO_CODEC_ID_AV1
 import com.wj.androidm3.business.ui.camera.EncoderWrapper.Companion.VIDEO_CODEC_ID_H264
 import com.wj.androidm3.business.ui.camera.EncoderWrapper.Companion.VIDEO_CODEC_ID_HEVC
+import com.wj.basecomponent.util.log.WJLog
 import java.io.File
 import java.lang.ref.WeakReference
 import java.nio.ByteBuffer
@@ -294,6 +295,8 @@ class WJEncoderWrapper(width: Int,
         val mOrientationHint = orientationHint
         var mVideoTrack: Int = -1
 
+        var mBPFrameNum = 0
+
         var mHandler: EncoderHandler? = null
         var mFrameNum: Int = 0
 
@@ -409,6 +412,14 @@ class WJEncoderWrapper(width: Int,
                         // so simply saving this off won't work.
                         if (VERBOSE) Log.d(TAG, "ignoring BUFFER_FLAG_CODEC_CONFIG")
                         mBufferInfo.size = 0
+                    }
+
+                    if(mBufferInfo.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0){
+                        Log.d(TAG, "mBPFrameNum:$mBPFrameNum I帧：flags:mBufferInfo.flags"  )
+                        mBPFrameNum = 0
+                    }else{
+                        Log.d(TAG, "B/P帧：flags" + mBufferInfo.flags)
+                        mBPFrameNum++
                     }
 
                     if (mBufferInfo.size != 0) {

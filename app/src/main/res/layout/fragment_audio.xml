@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <variable
+            name="viewModel"
+            type="com.wj.androidm3.business.ui.media.MediaViewModel" />
 
     </data>
 
@@ -15,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="start record audio"
+            android:textAllCaps="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="start record AAC"
+            android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,6 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="play record audio"
+            android:textAllCaps="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/startRecordAudio" />
 
@@ -39,6 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="resample audio"
+            android:textAllCaps="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/playAudio" />
 
@@ -47,6 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="push_av"
+            android:textAllCaps="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/resample_audio" />
 
@@ -56,6 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="aacRecord1"
+            android:textAllCaps="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/push_av" />
 
@@ -64,6 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="stopAAcRecord1"
+            android:textAllCaps="false"
 
             app:layout_constraintStart_toEndOf="@+id/aacRecord1"
             app:layout_constraintTop_toBottomOf="@+id/push_av" />
@@ -73,6 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="StartRecordWav"
+            android:textAllCaps="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/stopAAcRecord1" />
 
@@ -81,6 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="stopRecordWav"
+            android:textAllCaps="false"
             app:layout_constraintStart_toEndOf="@+id/startRecordWav"
             app:layout_constraintTop_toBottomOf="@+id/stopAAcRecord1" />
 
@@ -89,6 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="startRecordPCM"
+            android:textAllCaps="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/startRecordWav" />
 
@@ -97,14 +112,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="stopRecordPCM"
+            android:textAllCaps="false"
             app:layout_constraintStart_toEndOf="@+id/startRecordWav"
             app:layout_constraintTop_toBottomOf="@+id/startRecordWav" />
+
         <Button
             android:id="@+id/playPCM"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="playPCM"
+            android:textAllCaps="false"
             app:layout_constraintStart_toEndOf="@+id/startRecordWav"
             app:layout_constraintTop_toBottomOf="@+id/startRecordWav" />
+
+        <Button
+            android:id="@+id/startRecordAACByMediaCodec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{viewModel.recordingAACByMediaCodec?"stopRecordAACByMediaCodec":"startRecordAACByMediaCodec"}'
+            android:textAllCaps="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/playPCM"
+            tools:text="startRecordAACByMediaCodec" />
+
+
+        <Chronometer
+            android:id="@+id/recordingChronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
