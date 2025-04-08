@@ -10,6 +10,7 @@ extern "C" {
 #include "jni.h"
 #include "libavutil/avutil.h"
 #include "wj_log.h"
+#include "WJAudioReSample.h"
 
 }
 

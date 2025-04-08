@@ -38,7 +38,9 @@ add_library( # Sets the name of the library.
         SingleAudioRecoder.cpp
         nativelib.cpp
         WJACCEncoder.cpp
-        WJWavRecorder.cpp)
+        WJWavRecorder.cpp
+        JNITest.cpp
+        WJAudioResample.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

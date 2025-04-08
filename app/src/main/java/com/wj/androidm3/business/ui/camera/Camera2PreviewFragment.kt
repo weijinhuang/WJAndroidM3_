@@ -149,9 +149,9 @@ class Camera2PreviewFragment : BaseMVVMFragment<Camera2ViewModel, FragmentCamera
 
 
     companion object {
-        private data class CameraInfo(
-            val name: String, val cameraId: String, val size: Size, val fps: Int
-        )
+//        private data class CameraInfo(
+//            val name: String, val cameraId: String, val size: Size, val fps: Int
+//        )
 
         private const val RECORDER_VIDEO_BITRATE: Int = 10_000_000
         private const val MIN_REQUIRED_RECORDING_TIME_MILLIS: Long = 1000L
@@ -168,7 +168,7 @@ class Camera2PreviewFragment : BaseMVVMFragment<Camera2ViewModel, FragmentCamera
 
     override fun firstCreateView() {}
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)  {
         super.onViewCreated(view, savedInstanceState)
         mViewBinding?.run {
             captureButton.setOnClickListener {
@@ -235,7 +235,7 @@ class Camera2PreviewFragment : BaseMVVMFragment<Camera2ViewModel, FragmentCamera
     }
 
     private fun enumerateVideoCameras(callback: (cameraId: String) -> Unit) {
-        val availableCameras: MutableList<CameraInfo> = mutableListOf()
+//        val availableCameras: MutableList<CameraInfo> = mutableListOf()
         val cameraIdList = cameraManager.cameraIdList
         cameraIdList.forEach { id ->
             val characteristics = cameraManager.getCameraCharacteristics(id)
@@ -244,12 +244,8 @@ class Camera2PreviewFragment : BaseMVVMFragment<Camera2ViewModel, FragmentCamera
             )
             if (orientation == "Front") {
                 // Query the available capabilities and output formats
-                characteristics.get(
-                    CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES
-                )?.let { capabilities ->
-                    characteristics.get(
-                        CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP
-                    )?.let { cameraConfig ->
+                characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)?.let { capabilities ->
+                    characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)?.let { cameraConfig ->
                         if (capabilities.contains(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BACKWARD_COMPATIBLE)) {
                             // Recording should always be done in the most efficient format, which is
                             //  the format native to the camera framework
@@ -265,15 +261,15 @@ class Camera2PreviewFragment : BaseMVVMFragment<Camera2ViewModel, FragmentCamera
                                     mCameraId = id
                                     width = size.width
                                     height = size.height
-                                    fps = fps
+//                                    fps = fps
                                 }
-                                val fpsLabel = if (fps > 0) "$fps" else "N/A"
+//                                val fpsLabel = if (fps > 0) "$fps" else "N/A"
 
-                                availableCameras.add(
-                                    CameraInfo(
-                                        "$orientation ($id) $size $fpsLabel FPS", id, size, fps
-                                    )
-                                )
+//                                availableCameras.add(
+//                                    CameraInfo(
+//                                        "$orientation ($id) $size $fpsLabel FPS", id, size, fps
+//                                    )
+//                                )
                             }
                         }
                     }
@@ -378,8 +374,8 @@ class Camera2PreviewFragment : BaseMVVMFragment<Camera2ViewModel, FragmentCamera
                                         }, cameraHandler)
                                     }
                                     mViewModel.mRecording = true
-                                    lifecycleScope.launch(Dispatchers.Main){
-                                        mViewBinding?.captureButton?.background = activity?.getDrawable( R.drawable.ic_shutter_pressed)
+                                    lifecycleScope.launch(Dispatchers.Main) {
+                                        mViewBinding?.captureButton?.background = activity?.getDrawable(R.drawable.ic_shutter_pressed)
                                     }
                                     recordingStartMillis = System.currentTimeMillis()
                                     WJLog.d("开始录制")
@@ -398,8 +394,8 @@ class Camera2PreviewFragment : BaseMVVMFragment<Camera2ViewModel, FragmentCamera
     private suspend fun stopRecording() {
         mViewModel.mRecording = false
 
-        lifecycleScope.launch(Dispatchers.Main){
-            mViewBinding?.captureButton?.background = activity?.getDrawable( R.drawable.ic_shutter_normal)
+        lifecycleScope.launch(Dispatchers.Main) {
+            mViewBinding?.captureButton?.background = activity?.getDrawable(R.drawable.ic_shutter_normal)
         }
         cvRecordingStarted.block()
         encoder?.waitForFirstFrame()

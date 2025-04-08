@@ -17,11 +17,30 @@
     <style name="Theme.WJAndroidM3.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
-    <style name="MyTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
-        <!--    <style name="MyTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+    <style name="MyTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge"/>
+    <declare-styleable name="SpannedGridLayoutManager">
+        <attr name="android:orientation" />
+        <attr name="spanCount" />
+        <attr name="aspectRatio" format="string" />
+    </declare-styleable>
+    <declare-styleable name="HsPlayerView">
+        <attr name="play_type" format="integer">
+            <enum name="live" value="1"/>
+            <enum name="playback" value="2"/>
+            <enum name="vr" value="3"/>
+            <enum name="otherLive" value="4"/>
+            <enum name="otherPlayback" value="5"/>
+        </attr>
+        <attr name="play_screen" format="integer">
+            <enum name="single" value="1"/>
+            <enum name="multiple" value="2"/>
+        </attr>
+        <attr name="bottom_visibility" format="boolean"/>
+    </declare-styleable>
+<!--    <style name="MyTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
 
-        <!-- <item name="android:windowTranslucentStatus">true</item>
-         <item name="android:windowIsTranslucent">true</item> -->
-        <!--        <item name="android:windowBackground">@android:color/transparent</item>-->
-    </style>
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
+<!--        <item name="android:windowIsTranslucent">true</item>-->
+<!--        <item name="android:windowBackground">@android:color/transparent</item>-->
+<!--    </style>-->
 </resources>

@@ -15,6 +15,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.messaging.FirebaseMessaging
 import com.wj.androidm3.R
+import com.wj.androidm3.business.WJApplication
 import com.wj.androidm3.business.services.BackgroundService
 import com.wj.androidm3.business.ui.TestViewActivity
 import com.wj.androidm3.business.ui.camera.CameraTestFragment
@@ -29,9 +30,13 @@ import com.wj.androidm3.databinding.FragmentDashboardBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
 import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.util.notification.sendNotification
+import com.wj.nativelib.WJMediaJNIHepler
 import java.io.File
 import java.io.FileOutputStream
+import java.io.FileReader
+import java.io.FileWriter
 import java.lang.ref.WeakReference
+import java.text.SimpleDateFormat
 import java.util.*
 
 class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboardBinding>() {
@@ -42,6 +47,9 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
     }
 
     private val mFunctionList = listOf(
+        FunctionBean("MultiplePlayerView") {
+            findNavController().navigate(R.id.newHsMultiplePlayerViewTestFragment)
+        },
         FunctionBean("calcChargeTime") {
             findNavController().navigate(R.id.calcChargeTimeFragment)
         },
@@ -194,7 +202,62 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         FunctionBean("Camera2PreViewFragment") {
             findNavController().navigate(R.id.camera2PreviewFragment)
         },
+        FunctionBean("CreateFile") {
+            createFile()
+        },
+        FunctionBean("readFile") {
+            readFile()
+        },
+        FunctionBean("testJni") {
+            testJni()
+        },
+        FunctionBean("JNITest"){
+            WJMediaJNIHepler().jinTest()
+        }
     )
+
+    private fun testJni(){
+        val helper = WJMediaJNIHepler()
+        helper.jinTest()
+//        helper.jinTest()
+    }
+
+    private fun readFile() {
+        val file = File(
+            "${
+                WJApplication.getInstance().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path
+            }/test2.txt"
+        )
+        FileReader(file).use { fr ->
+            val lines = fr.readLines()
+            WJLog.d("lines :${lines.size}")
+            lines.forEach { line ->
+                WJLog.d("Line:$line")
+            }
+
+        }
+    }
+
+    private fun createFile() {
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
+        val file = File(
+            "${
+                WJApplication.getInstance().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path
+            }/test2.txt"
+        )
+        file.parentFile?.let { parent->
+            if(!parent.exists()){
+                val result = parent.mkdirs()
+                WJLog.d(parent.absolutePath+"创建成功：" + result)
+            }else{
+                WJLog.d(parent.absolutePath + "存在")
+            }
+        }
+        FileWriter(file).use { fw ->
+            fw.write("Test file : time ${simpleDateFormat.format(System.currentTimeMillis())}")
+        }
+        WJLog.d("${file.absolutePath}写入")
+    }
 
     private fun localeTest() {
         val default = Locale.getDefault()

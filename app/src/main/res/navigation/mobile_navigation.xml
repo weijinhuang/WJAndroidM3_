@@ -59,6 +59,10 @@
         android:id="@+id/camera2PreviewFragment"
         android:name="com.wj.androidm3.business.ui.camera.Camera2PreviewFragment"
         android:label="Camera2PreviewFragment" />
+    <fragment
+        android:id="@+id/newHsMultiplePlayerViewTestFragment"
+        android:name="com.wj.androidm3.business.ui.playerview.NewHsMultiplePlayerViewTestFragment"
+        android:label="NewHsMultiplePlayerViewTestFragment" />
 
 
 </navigation>

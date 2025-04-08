@@ -8,4 +8,10 @@
         android:id="@+id/audioFragment"
         android:name="com.wj.androidm3.business.ui.media.AudioFragment"
         android:label="AudioFragment" />
+    <fragment
+        android:id="@+id/mediaListFragment"
+        android:name="com.wj.androidm3.business.ui.media.MediaListFragment"
+        android:label="MediaListFragment" />
+
+
 </navigation>

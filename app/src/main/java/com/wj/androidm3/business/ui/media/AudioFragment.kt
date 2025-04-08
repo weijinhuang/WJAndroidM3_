@@ -3,7 +3,9 @@ package com.wj.androidm3.business.ui.media
 import android.Manifest
 import android.content.pm.PackageManager
 import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioRecord
+import android.media.AudioTrack
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
@@ -16,6 +18,7 @@ import android.widget.Chronometer
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.wj.androidm3.R
 import com.wj.androidm3.business.ui.media.audio.AudioEncoder
 import com.wj.androidm3.databinding.FragmentAudioBinding
@@ -24,26 +27,51 @@ import com.wj.basecomponent.util.BufferConverter
 import com.wj.basecomponent.util.fw.basictype.FWUnsignedInt
 import com.wj.basecomponent.util.fw.basictype.FWUnsignedShort
 import com.wj.basecomponent.util.log.WJLog
-import com.wj.nativelib.*
+import com.wj.nativelib.FFMediaRecorder
+import com.wj.nativelib.RECORDER_TYPE_SINGLE_AUDIO
+import com.wj.nativelib.WJMediaJNIHepler
+import com.wj.nativelib.WJNativeAudioEncoder
 import com.wj.nativelib.bean.WaveHeadJava
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.RandomAccessFile
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
+
+//ffmpeg -i input.mp4 -vf "drawtext=text='Watermark Text':x=10:y=10:fontsize=12:fontcolor=white:shadowy=2" -codec:a copy output.mp4
+//ffmpeg -i .\VID_20241214_133448.mp4 -vf "drawtext=fontfile=simhei.ttf:=text='粤AG30750':fontsize=44:fontcolor=white:shadowy=2:x=2580:y=1420" -codec:a copy output.mp4
+/**
+ffmpeg -i .\VID_20241214_133448.mp4 -vf "drawtext=text='方向：CH1':x=2580:y=1420:fontsize=34:shadowy=2:fontcolor=white:fontfile=.\simhei.ttf, drawtext=text='用户：粤AG30750':x=W-tw-10:y=H-th-10:fontsize=34:shadowy=2:fontcolor=white:fontfile=.\simhei.ttf" -codec:a copy output.mp4
+ **/
 class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
+
 
     private var mAudioRecord: AudioRecord? = null
 
     private var mFFMediaRecorder: FFMediaRecorder? = null
 
-    var mSimpleRate = 8000
+    var mSimpleRate = 44100
+    var mChannelConfig = AudioFormat.CHANNEL_IN_STEREO
+    val mAudioFormat = AudioFormat.ENCODING_PCM_16BIT
 
-    var mChannelConfig = AudioFormat.CHANNEL_IN_MONO
+//    var mSimpleRate = 48000
+//    var mChannelConfig = AudioFormat.CHANNEL_IN_MONO
+//    val mAudioFormat = AudioFormat.ENCODING_PCM_FLOAT
+
+    var mResampleSimpleRate = 48000
+    var mResampleChannelConfig = AudioFormat.CHANNEL_OUT_MONO
+    val mResampleAudioFormat = AudioFormat.ENCODING_PCM_FLOAT
 
     val mChannelCount = 1
+
 
     private var mRecordingJob: Job? = null
 
@@ -55,45 +83,34 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
 
     private var mAACFileName: String = ""
 
+
     init {
         System.loadLibrary("nativelib");
     }
 
+    override fun createViewModel(attachActivity: Boolean): MediaViewModel {
+        return super.createViewModel(true)
+    }
 
     override fun firstCreateView() {
         mViewBinding?.run {
             viewModel = mViewModel
+
+            btnFileList.setOnClickListener {
+                findNavController().navigate(R.id.mediaListFragment)
+
+            }
+            audioResample.setOnClickListener {
+                audioResampleByFFmpeg()
+            }
+
             startRecordAAC.setOnClickListener {
                 if (!mRecording) {
-                    checkReadExternalFilePermission {
-                        checkRecordPermission {
-                            initAudioRecord { audioRecord, buffSize ->
-                                startRecordAAC.text = "Stop Recording ACC"
-                                if (null == mFFMediaRecorder) {
-                                    mFFMediaRecorder = FFMediaRecorder().apply { init() }
-                                }
-                                mFFMediaRecorder?.run {
-                                    mRecordingJob = mViewModel.launchBackground2 {
-                                        val mOutUrl = mViewModel.createAACAudioFile().absolutePath
-                                        WJLog.i("开始录制ACC->$mOutUrl")
-                                        StartRecord(RECORDER_TYPE_SINGLE_AUDIO, mOutUrl, 0, 0, 0, 0)
-                                        audioRecord.startRecording()
-                                        val simpleBuffer = ByteArray(4096)
-                                        while (isActive) {
-                                            val result = audioRecord.read(simpleBuffer, 0, 4096)
-                                            if (result > 0) {
-                                                WJLog.d("Kotlin层读取数据：$result")
-                                                mFFMediaRecorder?.OnAudioData(simpleBuffer, result)
-                                            }
-                                        }
-                                    }
-                                }
-
-                            }
-                        }
-                    }
+                    recordAACEncodeByFFMpeg()
                 } else {
+                    stopRecordingChronometer()
                     startRecordAAC.text = "Start Recording ACC"
+                    mRecording = false
                     if (mAudioRecord?.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
                         mFFMediaRecorder?.StopRecord()
                         mAudioRecord?.stop()
@@ -105,73 +122,14 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                 }
 
             }
-
-            startRecordAudio.setOnClickListener { btn ->
-                checkReadExternalFilePermission {
-                    checkRecordPermission {
-                        initAudioRecord { ar, bufSize ->
-                            if (ar.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
-                                ar.stop()
-                                mRecordingJob?.cancel()
-                                mRecordingJob = null
-                                startRecordAudio.text = "Start Record"
-                            } else {
-                                startRecordAudio.text = "Stop Record"
-                                mRecordingJob = mViewModel.launchBackground2 {
-                                    ar.startRecording()
-                                    val buffer = ByteArray(bufSize)
-                                    try {
-                                        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-                                        val audioFileName =
-                                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
-                                                System.currentTimeMillis()
-                                            ) + ".pcm"
-                                        WJLog.i("Start record -> $audioFileName")
-                                        FileOutputStream(audioFileName).use { fos ->
-                                            while (isActive) {
-                                                val ret = ar.read(buffer, 0, bufSize)
-                                                WJLog.d("recording : $ret")
-                                                if (ret > 0) {
-                                                    fos.write(buffer, 0, ret)
-//                                                    WJLog.i(buffer.contentToString())
-                                                }
-                                            }
-                                        }
-
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                        WJLog.e(e.message ?: "")
-                                    }
-                                    WJLog.i("Recording end")
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
             playAudio.setOnClickListener {
                 checkReadExternalFilePermission {
-                    mViewModel.launchBackground2 {
-                        val path =
-                            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date.mp3"
-//                        val path = Environment.getExternalStorageDirectory().path + "/Music/if_have_a_date.mp3"
-                        WJLog.d("播放：$path")
-                        val mediaPlayer = WJMediaJNIHepler()
-                        mediaPlayer.playAudio(path)
-                    }
+                    playMP3()
                 }
 
             }
             resampleAudio.setOnClickListener {
-                val inPath =
-                    requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date.mp3"
-                val outPath =
-                    requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date2.mp3"
-//                        val path = Environment.getExternalStorageDirectory().path + "/Music/if_have_a_date.mp3"
-                WJLog.d("播放：$inPath")
-                val mediaPlayer = WJMediaJNIHepler()
-                mediaPlayer.audioResample(inPath, outPath, 16000)
+                resampleAudio()
             }
             pushAv.setOnClickListener {
                 val inputPath = "";
@@ -182,25 +140,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
             }
 
             aacRecord1.setOnClickListener {
-                checkReadExternalFilePermission {
-                    checkRecordPermission {
-                        if (null == mWJNativeAudioEncoder) {
-                            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
-                            mAACFileName =
-                                requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
-                                    System.currentTimeMillis()
-                                ) + ".aac"
-                            WJLog.d("创建aac：$mAACFileName")
-                            mWJNativeAudioEncoder = WJNativeAudioEncoder(requireActivity(), mAACFileName)
-                        }
-                        mWJNativeAudioEncoder?.run {
-                            initRecorder()
-                            recordStart()
-                        }
-                    }
-                }
-
-
+                aacRecord1()
             }
 
             stopAAcRecord1.setOnClickListener {
@@ -223,6 +163,10 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                 stopRecordPCM()
             }
             playPCM.setOnClickListener {
+                playPCM()
+            }
+            playResamplePCM.setOnClickListener {
+                playResamplePCM()
             }
             startRecordAACByMediaCodec.setOnClickListener {
                 if (!mViewModel.recordingAACByMediaCodec) {
@@ -233,7 +177,205 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                     mRecordingJob?.cancel()
                 }
             }
+        }
 
+    }
+
+    private var mPlaying = false
+    private var audioTrack: AudioTrack? = null
+    private fun playPCM() {
+        if (mPlaying) {
+            return
+        }
+        mViewModel.mFilePath.let {
+            if (it.endsWith("pcm")) {
+                // 计算缓冲区大小
+                val bufferSize = AudioTrack.getMinBufferSize(mSimpleRate, mChannelConfig, mAudioFormat)
+
+                // 创建AudioTrack实例
+                audioTrack = AudioTrack(
+                    AudioManager.STREAM_MUSIC,
+                    mSimpleRate,
+                    mChannelConfig,
+                    mAudioFormat,
+                    bufferSize,
+                    AudioTrack.MODE_STREAM
+                )
+
+
+                // 开始播放
+                audioTrack?.play()
+
+                mViewModel.launch {
+                    mPlaying = true
+                    val buffer = ByteArray(bufferSize)
+                    FileInputStream(it).use { fos ->
+                        var read = fos.read(buffer)
+                        while (read != -1 && mPlaying) {
+                            audioTrack?.write(buffer, 0, read)
+                            read = fos.read(buffer)
+                        }
+                        mPlaying = false
+                    }
+
+                }
+
+            }
+        }
+
+    }
+
+    private fun playResamplePCM() {
+        if (mPlaying) {
+            return
+        }
+        mViewModel.mFilePath.let {
+            if (it.endsWith("pcm")) {
+                // 计算缓冲区大小
+                val bufferSize = AudioTrack.getMinBufferSize(mResampleSimpleRate, mResampleChannelConfig, mResampleAudioFormat)
+
+                if(bufferSize == AudioTrack.ERROR_BAD_VALUE){
+                    WJLog.e("参数组合错误")
+                    return
+                }
+                // 创建AudioTrack实例
+                audioTrack = AudioTrack(
+                    AudioManager.STREAM_MUSIC,
+                    mResampleSimpleRate,
+                    mResampleChannelConfig,
+                    mResampleAudioFormat,
+                    bufferSize,
+                    AudioTrack.MODE_STREAM
+                )
+
+
+                // 开始播放
+                audioTrack?.play()
+
+                mViewModel.launch {
+                    mPlaying = true
+                    val buffer = ByteArray(bufferSize)
+                    FileInputStream(it).use { fos ->
+                        var read = fos.read(buffer)
+                        while (read != -1 && mPlaying) {
+                            audioTrack?.write(buffer, 0, read)
+                            read = fos.read(buffer)
+                        }
+                        mPlaying = false
+                    }
+
+                }
+
+            }
+        }
+
+    }
+
+
+    private fun audioResampleByFFmpeg() {
+//        mPCMFileName = requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/2025-01-16_230247.pcm"
+        mViewModel.mFilePath?.let { srcPcm ->
+            val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
+            val dstPCM = requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
+                System.currentTimeMillis()
+            ) + "resample.pcm"
+            val srcFile = File(srcPcm)
+            if (srcFile.exists()) {
+                val dstFile = File(dstPCM)
+                if (!dstFile.exists()) {
+                    val result = dstFile.createNewFile()
+                    WJLog.d("创建文件:$result")
+                }
+                WJLog.d(" kotlin  源文件：$srcPcm  目标文件：${dstFile.absolutePath}")
+                WJMediaJNIHepler().WJAudioResample(
+                    srcPcm, mSimpleRate, 2, mAudioFormat,
+                    dstPCM, mResampleSimpleRate, 1, mResampleAudioFormat
+                )
+            } else {
+                WJLog.d("源文件不存在")
+            }
+        }
+
+    }
+
+
+    private fun resampleAudio() {
+        val inPath =
+            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date.mp3"
+        val outPath =
+            requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date2.mp3"
+        //                        val path = Environment.getExternalStorageDirectory().path + "/Music/if_have_a_date.mp3"
+        WJLog.d("重采样：$inPath")
+        val mediaPlayer = WJMediaJNIHepler()
+        mediaPlayer.audioResample(inPath, outPath, 16000)
+    }
+
+    private fun playMP3() {
+        mViewModel.launchBackground2 {
+            val path =
+                requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "IfThereReallyWereAnotherDate.mp3"
+            //                        val path = Environment.getExternalStorageDirectory().path + "/Music/if_have_a_date.mp3"
+            val file = File(path)
+            if (file.exists()) {
+                WJLog.d("播放：$path")
+                val mediaPlayer = WJMediaJNIHepler()
+                mediaPlayer.playAudio(path)
+            } else {
+                WJLog.d("文件不存在：$path")
+            }
+        }
+    }
+
+    private fun aacRecord1() {
+        checkReadExternalFilePermission {
+            checkRecordPermission {
+                if (null == mWJNativeAudioEncoder) {
+                    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
+                    mAACFileName =
+                        requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
+                            System.currentTimeMillis()
+                        ) + ".aac"
+                    WJLog.d("创建aac：$mAACFileName")
+                    mWJNativeAudioEncoder = WJNativeAudioEncoder(requireActivity(), mAACFileName)
+                }
+                mWJNativeAudioEncoder?.run {
+                    initRecorder()
+                    recordStart()
+                }
+            }
+        }
+    }
+
+    private fun recordAACEncodeByFFMpeg() {
+        mViewBinding?.run {
+            checkReadExternalFilePermission {
+                checkRecordPermission {
+                    startRecordingChronometer()
+                    initAudioRecord { audioRecord, buffSize ->
+                        startRecordAAC.text = "Stop Recording ACC"
+                        if (null == mFFMediaRecorder) {
+                            mFFMediaRecorder = FFMediaRecorder().apply { init() }
+                        }
+                        mFFMediaRecorder?.run {
+                            mRecordingJob = mViewModel.launchBackground2 {
+                                val mOutUrl = mViewModel.createAACAudioFile().absolutePath
+                                WJLog.i("开始录制ACC->$mOutUrl")
+                                StartRecord(RECORDER_TYPE_SINGLE_AUDIO, mOutUrl, 0, 0, 0, 0)
+                                audioRecord.startRecording()
+                                val simpleBuffer = ByteArray(4096)
+                                while (isActive) {
+                                    val result = audioRecord.read(simpleBuffer, 0, 4096)
+                                    if (result > 0) {
+                                        WJLog.d("Kotlin层读取数据：$result")
+                                        mFFMediaRecorder?.OnAudioData(simpleBuffer, result)
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
         }
 
     }
@@ -254,12 +396,25 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                     startRecordingChronometer()
                     mViewModel.recordingAACByMediaCodec = true
                     mRecordingJob = lifecycleScope.launch(Dispatchers.IO) {
-                        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+                        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
                         mAACFileName =
                             requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
                                 System.currentTimeMillis()
                             ) + ".aac"
                         WJLog.d("创建aac：$mAACFileName")
+
+                        val aacFile = File(mAACFileName)
+                        aacFile.parentFile?.let { parentDir ->
+                            if (!parentDir.exists()) {
+                                val mkdirs = parentDir.mkdirs()
+                                WJLog.d("创建文件夹 ${parentDir.absolutePath}：$mkdirs")
+                            }
+                        }
+                        if (!aacFile.exists()) {
+                            val createFileResult = aacFile.createNewFile()
+                            WJLog.d("创建文件 :$createFileResult")
+                        }
+
 
                         mMediaMuxer = MediaMuxer(mAACFileName, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
 
@@ -303,7 +458,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
 
                         }
 
-                        WJLog.i("停止录制AAC:$mAACFileName")
+                        WJLog.i("停止录制AAC:$mAACFileName 文件存在：${File(mAACFileName).exists()}")
 
                         stopRecordingChronometer()
                         if (mTrackIndex != -1) {
@@ -328,28 +483,29 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
     private fun startRecordPCM() {
         checkRecordPermission {
             initAudioRecord { audioRecord, bufferSize ->
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
                 mPCMFileName =
                     requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
                         System.currentTimeMillis()
                     ) + ".pcm"
                 WJLog.d("创建pcm：$mPCMFileName")
+                startRecordingChronometer()
                 audioRecord.startRecording()
+                mRecording = true
                 mRecordPCMJob = lifecycleScope.launch(Dispatchers.IO) {
                     FileOutputStream(mPCMFileName).use { fos ->
                         val buffer = ByteArray(1024)
-                        while (isActive) {
+                        while (mRecording) {
                             val readCount = audioRecord.read(buffer, 0, 1024)
                             if (readCount > 0) {
                                 WJLog.d("data size :$readCount")
                                 fos.write(buffer, 0, readCount)
-                            } else {
-                                fos.flush()
-                                cancel()
                             }
                         }
+                        fos.flush()
                         WJLog.i("循环结束")
                     }
+                    WJLog.i("录制完毕")
                 }
             }
         }
@@ -357,7 +513,13 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
     }
 
     private fun stopRecordPCM() {
-        mRecordPCMJob?.cancel()
+        mRecording = false
+        stopRecordingChronometer()
+        mPCMFileName?.let {
+            WJLog.d("录制完毕:$mPCMFileName")
+            val file = File(mPCMFileName)
+            WJLog.d("文件存在：${file.exists()} 文件是否隐藏：${file.isHidden}")
+        }
     }
 
     private var mRecordWaveJob: Job? = null
@@ -365,7 +527,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
     private fun startRecordWav() {
         checkRecordPermission {
             initAudioRecord { audioRecord, bufferSize ->
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA)
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
                 mWaveFileName =
                     requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + simpleDateFormat.format(
                         System.currentTimeMillis()
@@ -435,14 +597,14 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
     override fun onDestroy() {
         super.onDestroy()
         mFFMediaRecorder?.DestroyContext()
+        mPlaying = false
     }
 
     @RequiresPermission(value = "android.permission.RECORD_AUDIO")
     private fun initAudioRecord(block: (audioRecord: AudioRecord, bufferSize: Int) -> Unit) {
-        val channelConfig = mChannelConfig
-        val audioFormat = AudioFormat.ENCODING_PCM_16BIT
-        val bufferSize = AudioRecord.getMinBufferSize(mSimpleRate, channelConfig, audioFormat)
-        WJLog.d("--initAudioRecord--channelConfig:$channelConfig audioFormat:$audioFormat bufferSize:$bufferSize")
+        val bufferSize = AudioRecord.getMinBufferSize(mSimpleRate, mChannelConfig, mAudioFormat)
+
+        WJLog.d("--initAudioRecord--channelConfig:$mChannelConfig audioFormat:$mAudioFormat bufferSize:$bufferSize")
         if (null != mAudioRecord) {
             block.invoke(mAudioRecord!!, bufferSize)
             return
@@ -450,8 +612,8 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
         mAudioRecord = AudioRecord(
             MediaRecorder.AudioSource.MIC,
             mSimpleRate,
-            channelConfig,
-            audioFormat,
+            mChannelConfig,
+            mAudioFormat,
             bufferSize
         )
         block.invoke(mAudioRecord!!, bufferSize)
@@ -501,6 +663,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
     }
 
     private fun stopRecordingChronometer() {
+
         mViewBinding?.recordingChronometer?.let { chronometer: Chronometer ->
             requireActivity().runOnUiThread {
                 chronometer.stop()

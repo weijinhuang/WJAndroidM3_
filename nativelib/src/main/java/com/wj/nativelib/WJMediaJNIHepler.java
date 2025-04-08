@@ -33,7 +33,25 @@ public class WJMediaJNIHepler {
     }
 
     private native int push(String inputPath, String outputPath);
+
     public int pushStream(String inputPath, String outputPath) {
         return push(inputPath, outputPath);
     }
+
+
+    public native int jinTest();
+
+    /**
+     *
+     * @param srcPCMFilePath
+     * @param srcSampleRate
+     * @param srcChannelCount
+     * @param srcSampleFormat
+     * @param dstPCMFile
+     * @param dstSampleRate
+     * @param dstChannelCount  1 ? AV_CH_LAYOUT_MONO : AV_CH_LAYOUT_STEREO
+     * @param dstSampleFormat 1->AV_SAMPLE_FMT_FLT else-> AV_SAMPLE_FMT_S16
+     */
+    public native void WJAudioResample(String srcPCMFilePath, int srcSampleRate, int srcChannelCount, int srcSampleFormat,
+                                       String dstPCMFile, int dstSampleRate, int dstChannelCount, int dstSampleFormat);
 }

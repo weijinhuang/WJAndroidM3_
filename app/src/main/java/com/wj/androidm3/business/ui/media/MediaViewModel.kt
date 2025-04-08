@@ -13,6 +13,9 @@ import kotlinx.coroutines.Job
 
 class MediaViewModel : BaseViewModel() {
 
+
+    var mFilePath = ""
+
     @get:Bindable
     var recordingAACByMediaCodec = false
         set(value) {
@@ -31,6 +34,7 @@ class MediaViewModel : BaseViewModel() {
             }/${simpleDateFormat.format(System.currentTimeMillis())}.aac"
         )
     }
+
 
 
 }
