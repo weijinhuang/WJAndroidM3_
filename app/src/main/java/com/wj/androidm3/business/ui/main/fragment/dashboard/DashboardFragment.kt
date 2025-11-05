@@ -26,10 +26,12 @@ import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity
 import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity2
 import com.wj.androidm3.business.ui.media.MediaActivity
 import com.wj.androidm3.business.ui.tabact.TabActivity
+import com.wj.androidm3.business.ui.test.TestBindingAdapterActivity
 import com.wj.androidm3.databinding.FragmentDashboardBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
 import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.util.notification.sendNotification
+import com.wj.nativelib.NativeLib
 import com.wj.nativelib.WJMediaJNIHepler
 import java.io.File
 import java.io.FileOutputStream
@@ -143,7 +145,7 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
             requireActivity().startActivity(Intent(requireActivity(), TabActivity::class.java))
         },
         FunctionBean("Native Test") {
-//            WJLog.i("NativeLib().stringFromJNI() -> ${NativeLib().stringFromJNI()}")
+            WJLog.i("NativeLib().stringFromJNI() -> ${NativeLib().stringFromJNI()}")
         },
         FunctionBean("Kotlin Test") {
             Intent(requireActivity(), KotlinTestActivity::class.java).apply {
@@ -213,7 +215,10 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         },
         FunctionBean("JNITest"){
             WJMediaJNIHepler().jinTest()
-        }
+        },
+        FunctionBean("TestBindingAdapter") {
+            startActivity(Intent(requireActivity(), TestBindingAdapterActivity::class.java))
+        },
     )
 
     private fun testJni(){

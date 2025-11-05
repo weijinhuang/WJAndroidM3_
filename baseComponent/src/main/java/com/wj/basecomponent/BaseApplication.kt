@@ -2,6 +2,7 @@ package com.wj.basecomponent
 
 import android.app.Application
 import com.wj.basecomponent.androidx.WJActivityLifeCycle
+import com.wj.basecomponent.util.SPUtils
 
 open class BaseApplication : Application() {
 
@@ -14,5 +15,6 @@ open class BaseApplication : Application() {
         super.onCreate()
         INSTANCE = this
         this.registerActivityLifecycleCallbacks(WJActivityLifeCycle())
+        SPUtils.init(this)
     }
 }

@@ -1,11 +1,10 @@
 package com.wj.androidm3.business.ui.main.fragment
 
 import android.app.TimePickerDialog
-import android.text.Editable
-import android.text.TextWatcher
 import com.wj.androidm3.R
 import com.wj.androidm3.databinding.FragmentCalcChargeTimeBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
+import com.wj.basecomponent.util.SPUtils
 import com.wj.basecomponent.view.WJNumberPickerDialog
 
 /**
@@ -20,12 +19,18 @@ class CalcChargeTimeFragment : BaseMVVMFragment<CalcChargeTimeViewModel, Fragmen
             startPercent.setOnClickListener {
                 showNumberPicker(mViewModel.startPercent) {
                     mViewModel.startPercent = it
-                    mViewModel.calcEndTime()
+                    SPUtils.getInstance().putInt(START_SOC, it)
+                    if(mViewModel.calcStart) {
+                        mViewModel.calcEndTime()
+                    }else{
+                        mViewModel.calcStartTime()
+                    }
                 }
             }
             endPercent.setOnClickListener {
                 showNumberPicker(mViewModel.endPercent) {
                     mViewModel.endPercent = it
+                    SPUtils.getInstance().putInt(END_SOC, it)
                     mViewModel.calcEndTime()
                 }
             }

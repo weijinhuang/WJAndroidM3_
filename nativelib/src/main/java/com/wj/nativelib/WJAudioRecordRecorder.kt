@@ -13,11 +13,11 @@ import kotlinx.coroutines.*
 import java.io.FileOutputStream
 import java.lang.ref.WeakReference
 
-const val SAMPLE_RATE = 44100
+const val SAMPLE_RATE = 8000
 
 const val AUDIO_SOURCE = MediaRecorder.AudioSource.MIC
 
-const val CHANNEL = AudioFormat.CHANNEL_IN_STEREO
+const val CHANNEL = AudioFormat.CHANNEL_IN_MONO
 
 const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
 
