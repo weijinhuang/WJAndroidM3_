@@ -64,5 +64,10 @@
         android:name="com.wj.androidm3.business.ui.playerview.NewHsMultiplePlayerViewTestFragment"
         android:label="NewHsMultiplePlayerViewTestFragment" />
 
+    <fragment
+        android:id="@+id/navigation_audio_test"
+        android:name="com.wj.androidm3.business.ui.audio.AudioTestFragment"
+        android:label="@string/title_audio_test"
+        tools:layout="@layout/fragment_audio_test" />
 
 </navigation>

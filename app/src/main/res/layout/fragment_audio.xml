@@ -26,6 +26,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+                <TextView
+                    android:text="@string/action_settings"
+                    android:gravity="end"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
 
                 <Button
                     android:id="@+id/btnFileList"
@@ -62,11 +67,11 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
-                    android:id="@+id/resample_audio"
+                    android:id="@+id/resample_mp3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/line_round"
-                    android:text="resample audio"
+                    android:text="resample to mp3"
                     android:textAllCaps="false"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/playAudio" />

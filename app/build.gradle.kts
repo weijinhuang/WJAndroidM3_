@@ -68,12 +68,10 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    
     buildFeatures {
         viewBinding = true
         dataBinding = true
@@ -85,6 +83,7 @@ android {
             }
         }
     }
+    namespace = "com.wj.androidm3"
 }
 
 dependencies {
@@ -99,6 +98,8 @@ dependencies {
 
     implementation(project(mapOf("path" to ":nativelib")))
     implementation("androidx.graphics:graphics-core:1.0.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.9.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.9.5")
 //    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
 //    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     Libs.commonDep(this)

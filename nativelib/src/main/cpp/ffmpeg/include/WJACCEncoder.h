@@ -29,10 +29,15 @@ private:
 
     SwrContext *swr = nullptr;
 
+    AVSampleFormat in_sample_fmt = AV_SAMPLE_FMT_S16;
+    int in_channels = 2;
+    int in_sample_rate = 44100;
+    int64_t in_channel_layout = AV_CH_LAYOUT_STEREO;
+
     int EncodeFrame(AVCodecContext *pCodecCtx, AVFrame *pFrame);
 
 public:
-    int EncodeStart(const char *aacPath);
+    int EncodeStart(const char *aacPath, int sampleRate, int channelCount, int sampleFormat);
     int EncodeBuffer(const unsigned char *pcmBuffer, int length);
     int EncodeStop();
 };

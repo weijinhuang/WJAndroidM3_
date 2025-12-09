@@ -67,8 +67,8 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
 //    val mAudioFormat = AudioFormat.ENCODING_PCM_FLOAT
 
     var mResampleSimpleRate = 48000
-    var mResampleChannelConfig = AudioFormat.CHANNEL_OUT_MONO
-    val mResampleAudioFormat = AudioFormat.ENCODING_PCM_FLOAT
+    var mResampleChannelConfig = AudioFormat.CHANNEL_IN_MONO
+    val mResampleAudioFormat = AudioFormat.ENCODING_PCM_16BIT
 
     val mChannelCount = 1
 
@@ -128,8 +128,8 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                 }
 
             }
-            resampleAudio.setOnClickListener {
-                resampleAudio()
+            resampleMp3.setOnClickListener {
+                resampleMp3()
             }
             pushAv.setOnClickListener {
                 val inputPath = "";
@@ -163,10 +163,15 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                 stopRecordPCM()
             }
             playPCM.setOnClickListener {
-                playPCM()
+
+                playPCM(
+                    mSimpleRate,
+                    if (mChannelConfig == AudioFormat.CHANNEL_IN_MONO) AudioFormat.CHANNEL_OUT_MONO else AudioFormat.CHANNEL_OUT_STEREO,
+                    mAudioFormat
+                )
             }
             playResamplePCM.setOnClickListener {
-                playResamplePCM()
+                playPCM(mResampleSimpleRate, if (mResampleChannelConfig == AudioFormat.CHANNEL_IN_MONO) AudioFormat.CHANNEL_OUT_MONO else AudioFormat.CHANNEL_OUT_STEREO, mResampleAudioFormat)
             }
             startRecordAACByMediaCodec.setOnClickListener {
                 if (!mViewModel.recordingAACByMediaCodec) {
@@ -183,67 +188,28 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
 
     private var mPlaying = false
     private var audioTrack: AudioTrack? = null
-    private fun playPCM() {
+    private fun playPCM(sampleRate: Int, channelConfig: Int, audioFormat: Int) {
         if (mPlaying) {
             return
         }
+
+        audioTrack?.release()
+        audioTrack = null
         mViewModel.mFilePath.let {
             if (it.endsWith("pcm")) {
                 // 计算缓冲区大小
-                val bufferSize = AudioTrack.getMinBufferSize(mSimpleRate, mChannelConfig, mAudioFormat)
-
-                // 创建AudioTrack实例
-                audioTrack = AudioTrack(
-                    AudioManager.STREAM_MUSIC,
-                    mSimpleRate,
-                    mChannelConfig,
-                    mAudioFormat,
-                    bufferSize,
-                    AudioTrack.MODE_STREAM
-                )
-
-
-                // 开始播放
-                audioTrack?.play()
-
-                mViewModel.launch {
-                    mPlaying = true
-                    val buffer = ByteArray(bufferSize)
-                    FileInputStream(it).use { fos ->
-                        var read = fos.read(buffer)
-                        while (read != -1 && mPlaying) {
-                            audioTrack?.write(buffer, 0, read)
-                            read = fos.read(buffer)
-                        }
-                        mPlaying = false
-                    }
-
-                }
-
-            }
-        }
-
-    }
-
-    private fun playResamplePCM() {
-        if (mPlaying) {
-            return
-        }
-        mViewModel.mFilePath.let {
-            if (it.endsWith("pcm")) {
-                // 计算缓冲区大小
-                val bufferSize = AudioTrack.getMinBufferSize(mResampleSimpleRate, mResampleChannelConfig, mResampleAudioFormat)
-
-                if(bufferSize == AudioTrack.ERROR_BAD_VALUE){
+                val bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, audioFormat)
+                if (bufferSize == AudioTrack.ERROR_BAD_VALUE) {
                     WJLog.e("参数组合错误")
                     return
                 }
+                WJLog.d("创建AudioTrack: simpleRate:$sampleRate channelConfig:$channelConfig audioFormat:$audioFormat")
                 // 创建AudioTrack实例
                 audioTrack = AudioTrack(
                     AudioManager.STREAM_MUSIC,
-                    mResampleSimpleRate,
-                    mResampleChannelConfig,
-                    mResampleAudioFormat,
+                    sampleRate,
+                    channelConfig,
+                    audioFormat,
                     bufferSize,
                     AudioTrack.MODE_STREAM
                 )
@@ -256,21 +222,20 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                     mPlaying = true
                     val buffer = ByteArray(bufferSize)
                     FileInputStream(it).use { fos ->
-                        var read = fos.read(buffer)
+                        var read = 0
                         while (read != -1 && mPlaying) {
-                            audioTrack?.write(buffer, 0, read)
                             read = fos.read(buffer)
+                            audioTrack?.write(buffer, 0, read)
                         }
                         mPlaying = false
+
+                        audioTrack?.release()
+                        audioTrack = null
                     }
-
                 }
-
             }
         }
-
     }
-
 
     private fun audioResampleByFFmpeg() {
 //        mPCMFileName = requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/2025-01-16_230247.pcm"
@@ -286,10 +251,14 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                     val result = dstFile.createNewFile()
                     WJLog.d("创建文件:$result")
                 }
-                WJLog.d(" kotlin  源文件：$srcPcm  目标文件：${dstFile.absolutePath}")
+                val srcChannelCount = if (mChannelConfig == AudioFormat.CHANNEL_IN_STEREO) 2 else 1
+                val dstChannelCount = if (mResampleChannelConfig == AudioFormat.CHANNEL_IN_STEREO) 2 else 1
+
+                WJLog.d(" kotlin  源文件：$srcPcm  sampleRat:$mSimpleRate srcChannelCount:$srcChannelCount audioFormat:$mAudioFormat")
+                WJLog.d(" kotlin  目标文件：$dstPCM  sampleRat:$mResampleSimpleRate dstChannelCount:$dstChannelCount audioFormat:$mResampleAudioFormat")
                 WJMediaJNIHepler().WJAudioResample(
-                    srcPcm, mSimpleRate, 2, mAudioFormat,
-                    dstPCM, mResampleSimpleRate, 1, mResampleAudioFormat
+                    srcPcm, mSimpleRate, srcChannelCount, mAudioFormat,
+                    dstPCM, mResampleSimpleRate, dstChannelCount, mResampleAudioFormat
                 )
             } else {
                 WJLog.d("源文件不存在")
@@ -299,7 +268,7 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
     }
 
 
-    private fun resampleAudio() {
+    private fun resampleMp3() {
         val inPath =
             requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC)?.path + "/" + "if_have_a_date.mp3"
         val outPath =
@@ -495,10 +464,14 @@ class AudioFragment : BaseMVVMFragment<MediaViewModel, FragmentAudioBinding>() {
                 mRecordPCMJob = lifecycleScope.launch(Dispatchers.IO) {
                     FileOutputStream(mPCMFileName).use { fos ->
                         val buffer = ByteArray(1024)
+                        var totalRead = 0
                         while (mRecording) {
                             val readCount = audioRecord.read(buffer, 0, 1024)
                             if (readCount > 0) {
-                                WJLog.d("data size :$readCount")
+                                totalRead += readCount
+                                if (System.currentTimeMillis() % 1000 == 0L) {
+                                    WJLog.d("data size :$totalRead")
+                                }
                                 fos.write(buffer, 0, readCount)
                             }
                         }

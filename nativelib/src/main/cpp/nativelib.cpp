@@ -71,7 +71,8 @@ Java_com_wj_nativelib_WJNativeAudioEncoder_encodeAudioStart(JNIEnv *env, jobject
         LOGI(LOG_TAG, "创建native aac encoder -> pAACEncoder = new WJACCEncoder();");
         pAACEncoder = new WJACCEncoder();
         const char *aacPath = env->GetStringUTFChars(aac_path, NULL);
-        int ret = pAACEncoder->EncodeStart(aacPath);
+        // 默认参数: 44100Hz, 立体声, PCM16
+        int ret = pAACEncoder->EncodeStart(aacPath, 44100, 2, 2);
         if (ret < 0) {
             LOGE(LOG_TAG, "JNI编码初始化失败");
         } else {

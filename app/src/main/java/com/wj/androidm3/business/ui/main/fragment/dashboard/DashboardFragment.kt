@@ -55,6 +55,9 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         FunctionBean("calcChargeTime") {
             findNavController().navigate(R.id.calcChargeTimeFragment)
         },
+        FunctionBean("MediaTest") {
+            findNavController().navigate(R.id.navigation_audio_test)
+        },
         FunctionBean("StartNormalService") {
             val serviceIntent = Intent(requireActivity(), BackgroundService::class.java)
             requireActivity().startService(serviceIntent)
@@ -157,6 +160,7 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
                 requireActivity().startActivity(this)
             }
         },
+
         FunctionBean("ViewPager2 Test") {
             Intent(requireActivity(), ViewPager2NestedActivity::class.java).apply {
                 requireActivity().startActivity(this)

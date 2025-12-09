@@ -15,6 +15,8 @@ public class WJMediaJNIHepler {
 
     public native void playAudio(String filePath);
 
+    public native void pcm2aac(String pcmFilePath, String aacFilePath, int sampleRate, int channelCount, int sampleFormat);
+
 
     public native void audioResample(String inputPath, String outputPath, int sampleRate);
 
@@ -52,6 +54,6 @@ public class WJMediaJNIHepler {
      * @param dstChannelCount  1 ? AV_CH_LAYOUT_MONO : AV_CH_LAYOUT_STEREO
      * @param dstSampleFormat 1->AV_SAMPLE_FMT_FLT else-> AV_SAMPLE_FMT_S16
      */
-    public native void WJAudioResample(String srcPCMFilePath, int srcSampleRate, int srcChannelCount, int srcSampleFormat,
-                                       String dstPCMFile, int dstSampleRate, int dstChannelCount, int dstSampleFormat);
+    public native void WJAudioResample(String srcPCMFilePath,   int srcSampleRate, int srcChannelCount, int srcSampleFormat,
+                                       String dstPCMFile,       int dstSampleRate, int dstChannelCount, int dstSampleFormat);
 }

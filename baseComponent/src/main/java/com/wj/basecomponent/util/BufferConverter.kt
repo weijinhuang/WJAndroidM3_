@@ -193,8 +193,10 @@ object BufferConverter {
                 val fieldInstance =
                     java.lang.reflect.Array.newInstance(genericType!!, fieldAnnotation.size)
                 for (i in 0 until fieldAnnotation.size) {
-                    val arrayMemberFieldInstance = genericType.newInstance()
-                    if (arrayMemberFieldInstance is FWBasicType<*>) {
+                    val arrayMemberFieldInstance_ = genericType.newInstance()
+                    if (arrayMemberFieldInstance_ is FWBasicType<*>) {
+                        @Suppress("UNCHECKED_CAST")
+                        val arrayMemberFieldInstance = arrayMemberFieldInstance_ as FWBasicType<Any?>
                         val arrayMemberClassAnnotation = genericType.getAnnotation(Size::class.java)
                         val size = arrayMemberClassAnnotation?.value
                             ?: throw RuntimeException("undefine type size")
@@ -224,8 +226,10 @@ object BufferConverter {
                 }
                 field.set(newInstance, fieldInstance)
             } else {
-                val fieldInstance = fieldClass.newInstance()
-                if (fieldInstance is FWBasicType<*>) {
+                val fieldInstance_ = fieldClass.newInstance()
+                if (fieldInstance_ is FWBasicType<*>) {
+                    @Suppress("UNCHECKED_CAST")
+                    val fieldInstance = fieldInstance_ as FWBasicType<Any?>
                     var size = fieldAnnotation.size
                     if (fieldInstance is FWString) {
                         if (size != 0) {
@@ -271,6 +275,5 @@ object BufferConverter {
         }
         return newInstance
     }
-
 
 }

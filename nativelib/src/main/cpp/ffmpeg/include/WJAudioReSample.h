@@ -30,6 +30,8 @@ public:
     int writeFile(const char *dstFile);
 
     int readFile(const char *dstFile);
+
+    int simpleCopy(const char *inFilePath,int src_sample_rate, int src_channel_count, int src_sample_format, const char *outFilePath,int dst_sample_rate, int dst_channel_count, int dst_sample_format);
 };
 
 #endif //WJANDROIDM3_WJAUDIORESAMPLE_H
