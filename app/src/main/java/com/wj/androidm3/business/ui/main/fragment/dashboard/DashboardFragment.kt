@@ -20,8 +20,10 @@ import com.wj.androidm3.business.services.BackgroundService
 import com.wj.androidm3.business.ui.TestViewActivity
 import com.wj.androidm3.business.ui.camera.CameraTestFragment
 import com.wj.androidm3.business.ui.camera.CameraXActivity
+import com.wj.androidm3.business.ui.codec.MediaCodecLabActivity
 import com.wj.androidm3.business.ui.conversationincome.PhoneConversationActivity
 import com.wj.androidm3.business.ui.kotlintest.KotlinTestActivity
+import com.wj.androidm3.business.ui.lanvideo.LanVideoCallActivity
 import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity
 import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity2
 import com.wj.androidm3.business.ui.media.MediaActivity
@@ -49,6 +51,14 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
     }
 
     private val mFunctionList = listOf(
+        FunctionBean("LAN Video Chat") {
+            // WebRTC 渲染页需要独立开启硬件加速，所以这里启动单独的 Activity。
+            requireActivity().startActivity(Intent(requireActivity(), LanVideoCallActivity::class.java))
+        },
+        FunctionBean("MediaCodec Codec Lab") {
+            // 教学页：保留 WebRTC 功能不变，额外用 MediaCodec 手写一遍音视频编解码闭环。
+            requireActivity().startActivity(Intent(requireActivity(), MediaCodecLabActivity::class.java))
+        },
         FunctionBean("MultiplePlayerView") {
             findNavController().navigate(R.id.newHsMultiplePlayerViewTestFragment)
         },

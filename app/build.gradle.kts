@@ -100,6 +100,10 @@ dependencies {
     implementation("androidx.graphics:graphics-core:1.0.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.9.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.9.5")
+    // WebRTC 负责实时音视频里最难的部分：摄像头/麦克风采集、硬件编解码、
+    // RTP/RTCP 传输、抖动缓冲、丢包恢复、回声消除，以及远端音视频播放。
+    // 本功能只需要自己实现局域网内的“请求/接受/SDP/ICE”信令交换。
+    implementation("org.webrtc:google-webrtc:1.0.32006")
 //    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
 //    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     Libs.commonDep(this)

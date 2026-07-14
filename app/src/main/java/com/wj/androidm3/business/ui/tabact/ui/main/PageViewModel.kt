@@ -2,11 +2,10 @@ package com.wj.androidm3.business.ui.tabact.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
+import com.wj.basecomponent.vm.BaseViewModel
 
-class PageViewModel : ViewModel() {
+class PageViewModel : BaseViewModel() {
 
     private val _index = MutableLiveData<Int>()
     val text: LiveData<String> = _index.map {

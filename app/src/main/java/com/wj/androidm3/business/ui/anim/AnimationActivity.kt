@@ -1,14 +1,19 @@
 package com.wj.androidm3.business.ui.anim
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.wj.androidm3.R
+import com.wj.androidm3.databinding.ActivityAnimationBinding
+import com.wj.basecomponent.ui.BaseMVVMActivity
+import com.wj.basecomponent.vm.BaseViewModel
 
-class AnimationActivity : AppCompatActivity() {
+class AnimationActivity : BaseMVVMActivity<BaseViewModel, ActivityAnimationBinding>() {
+
+    override fun getLayoutId(): Int {
+        return R.layout.activity_animation
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_animation)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, AnimationFragment.newInstance())

@@ -11,16 +11,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.wj.androidm3.R
-import com.wj.basecomponent.ui.BaseActivity
+import com.wj.androidm3.databinding.FragmentViewpager2NestedBinding
+import com.wj.basecomponent.ui.BaseMVVMActivity
 import com.wj.basecomponent.util.log.WJLog
+import com.wj.basecomponent.vm.BaseViewModel
 import com.wj.basecomponent.view.viewpager.LongSeViewPager
 
-class ViewPager2NestedActivity3 : BaseActivity() {
+class ViewPager2NestedActivity3 : BaseMVVMActivity<BaseViewModel, FragmentViewpager2NestedBinding>() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_viewpager2_nested)
         val viewPager2 = findViewById<LongSeViewPager>(R.id.vp_outer)
         val dataArray = Array(2) { it1 -> Array(4) { it2 -> "$it1: $it2" } }
         val adapter = TestLongSeViewPage2FragmentAdapter()

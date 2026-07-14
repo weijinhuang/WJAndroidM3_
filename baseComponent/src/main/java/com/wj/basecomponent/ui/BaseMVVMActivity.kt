@@ -1,14 +1,14 @@
 package com.wj.basecomponent.ui
 
 import android.os.Bundle
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
+import android.view.LayoutInflater
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewbinding.ViewBinding
 import com.wj.basecomponent.ui.constraint.BaseMVVM
 import com.wj.basecomponent.vm.BaseViewModel
 import java.lang.reflect.ParameterizedType
 
-abstract class BaseMVVMActivity<VM : BaseViewModel, VDB : ViewDataBinding> : BaseActivity(), BaseMVVM<VM> {
+abstract class BaseMVVMActivity<VM : BaseViewModel, VDB : ViewBinding> : BaseActivity(), BaseMVVM<VM> {
 
      var mViewBinding: VDB? = null
 
@@ -27,6 +27,16 @@ abstract class BaseMVVMActivity<VM : BaseViewModel, VDB : ViewDataBinding> : Bas
     }
 
     private fun bindView() {
-        mViewBinding = DataBindingUtil.setContentView(this, getLayoutId())
+        val binding = createViewBinding()
+        mViewBinding = binding
+        setContentView(binding.root)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun createViewBinding(): VDB {
+        val parameterizedType = javaClass.genericSuperclass as ParameterizedType
+        val bindingClazz = parameterizedType.actualTypeArguments[1] as Class<VDB>
+        val inflateMethod = bindingClazz.getMethod("inflate", LayoutInflater::class.java)
+        return inflateMethod.invoke(null, layoutInflater) as VDB
     }
 }

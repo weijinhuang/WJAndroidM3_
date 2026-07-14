@@ -10,14 +10,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.wj.androidm3.R
-import com.wj.basecomponent.ui.BaseActivity
+import com.wj.androidm3.databinding.FragmentViewpager2NestedBinding
+import com.wj.basecomponent.ui.BaseMVVMActivity
+import com.wj.basecomponent.vm.BaseViewModel
 
-class ViewPager2NestedActivity : BaseActivity() {
+class ViewPager2NestedActivity : BaseMVVMActivity<BaseViewModel, FragmentViewpager2NestedBinding>() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_viewpager2_nested)
         val dataArray = Array(2) { it1 -> Array(4) { it2 -> "$it1: $it2" } }
         val adapter = OuterViewpagerAdapter(this, dataArray)
         val viewPager2 = findViewById<ViewPager2>(R.id.vp_outer)

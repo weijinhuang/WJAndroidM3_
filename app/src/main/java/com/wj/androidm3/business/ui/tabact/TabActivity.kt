@@ -5,21 +5,23 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import androidx.viewpager.widget.ViewPager
-import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
+import com.wj.androidm3.R
 import com.wj.androidm3.business.ui.tabact.ui.main.SectionsPagerAdapter
 import com.wj.androidm3.databinding.ActivityTabBinding
+import com.wj.basecomponent.ui.BaseMVVMActivity
+import com.wj.basecomponent.vm.BaseViewModel
 
-class TabActivity : AppCompatActivity() {
+class TabActivity : BaseMVVMActivity<BaseViewModel, ActivityTabBinding>() {
 
-    private lateinit var binding: ActivityTabBinding
+    private val binding: ActivityTabBinding
+        get() = requireNotNull(mViewBinding)
+
+    override fun getLayoutId(): Int {
+        return R.layout.activity_tab
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityTabBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         val viewPager: ViewPager = binding.viewPager

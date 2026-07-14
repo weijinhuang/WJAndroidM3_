@@ -5,24 +5,27 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.wj.androidm3.R
 import com.wj.androidm3.databinding.ActivityMainBinding
+import com.wj.basecomponent.ui.BaseMVVMActivity
 import com.wj.basecomponent.util.log.WJLog
+import com.wj.basecomponent.vm.BaseViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseMVVMActivity<BaseViewModel, ActivityMainBinding>() {
 
-    private lateinit var binding: ActivityMainBinding
+    private val binding: ActivityMainBinding
+        get() = requireNotNull(mViewBinding)
+
+    override fun getLayoutId(): Int {
+        return R.layout.activity_main
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
         navView.inflateMenu(R.menu.bottom_nav_menu)

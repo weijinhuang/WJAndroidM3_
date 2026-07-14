@@ -5,15 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
+import androidx.viewbinding.ViewBinding
 import com.wj.basecomponent.vm.BaseViewModel
 import com.wj.basecomponent.ui.constraint.BaseMVVM
 import java.lang.reflect.ParameterizedType
 
-abstract class BaseMVVMFragment<VM : BaseViewModel, VDB : ViewDataBinding> : BaseFragment(), BaseMVVM<VM> {
+abstract class BaseMVVMFragment<VM : BaseViewModel, VDB : ViewBinding> : BaseFragment(), BaseMVVM<VM> {
 
     var mViewBinding: VDB? = null
 
@@ -25,7 +23,7 @@ abstract class BaseMVVMFragment<VM : BaseViewModel, VDB : ViewDataBinding> : Bas
         savedInstanceState: Bundle?
     ): View? {
         if (mRootView == null || !enableCacheView()) {
-            mViewBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
+            mViewBinding = createViewBinding(inflater, container)
             mRootView = mViewBinding?.root
             firstCreateView()
         }
@@ -49,7 +47,20 @@ abstract class BaseMVVMFragment<VM : BaseViewModel, VDB : ViewDataBinding> : Bas
     }
 
     fun bindView(inflater: LayoutInflater, container: ViewGroup?) {
-        mViewBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
+        mViewBinding = createViewBinding(inflater, container)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun createViewBinding(inflater: LayoutInflater, container: ViewGroup?): VDB {
+        val parameterizedType = javaClass.genericSuperclass as ParameterizedType
+        val bindingClazz = parameterizedType.actualTypeArguments[1] as Class<VDB>
+        val inflateMethod = bindingClazz.getMethod(
+            "inflate",
+            LayoutInflater::class.java,
+            ViewGroup::class.java,
+            Boolean::class.javaPrimitiveType
+        )
+        return inflateMethod.invoke(null, inflater, container, false) as VDB
     }
 
 

@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 局域网 socket 也属于网络访问；没有 INTERNET 权限，TCP 信令连接无法建立。 -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Request legacy Bluetooth permissions on older devices. -->
     <uses-permission android:name="android.permission.BLUETOOTH"
@@ -74,6 +76,21 @@
         <activity
             android:name=".business.ui.conversationincome.PhoneConversationActivity"
             android:exported="false" />
+        <activity
+            android:name=".business.ui.codec.MediaCodecLabActivity"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyTheme" />
+        <!-- 当前 MainActivity/MediaActivity 显式关闭了硬件加速。
+             WebRTC 的 SurfaceViewRenderer 使用 EGL/OpenGL 渲染视频帧，
+             独立 Activity 开启硬件加速可以避免和旧页面配置互相影响。 -->
+        <activity
+            android:name=".business.ui.lanvideo.LanVideoCallActivity"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyTheme" />
         <activity
             android:name=".business.ui.anim.AnimationActivity"
             android:exported="false" />

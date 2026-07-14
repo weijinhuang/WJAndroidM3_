@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#101214"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="LAN Video Chat"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/localIpText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="#B9C0C8"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleText"
+            tools:text="Local IP: 192.168.3.12" />
+
+        <!-- V1 按用户需求只输入对方局域网 IPv4，不做扫码、广播发现或通讯录。 -->
+        <EditText
+            android:id="@+id/peerIpEdit"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="12dp"
+            android:background="@android:color/white"
+            android:hint="Peer LAN IP"
+            android:inputType="phone"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:singleLine="true"
+            android:textColor="@android:color/black"
+            android:textColorHint="#5E6670"
+            app:layout_constraintEnd_toStartOf="@id/callButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/localIpText" />
+
+        <Button
+            android:id="@+id/callButton"
+            android:layout_width="96dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:text="Call"
+            app:layout_constraintBottom_toBottomOf="@id/peerIpEdit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/peerIpEdit"
+            app:layout_constraintTop_toTopOf="@id/peerIpEdit" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Idle"
+            android:textColor="#E2E8F0"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/hangupButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/peerIpEdit" />
+
+        <Button
+            android:id="@+id/hangupButton"
+            android:layout_width="96dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:enabled="false"
+            android:text="Hang up"
+            app:layout_constraintBottom_toBottomOf="@id/statusText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/statusText" />
+
+        <!-- A 画面：默认承载对方视频，铺满主要区域。 -->
+        <FrameLayout
+            android:id="@+id/primaryVideoContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statusText">
+
+            <org.webrtc.SurfaceViewRenderer
+                android:id="@+id/wPrimaryRenderer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/primaryLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                android:layout_margin="12dp"
+                android:background="#66000000"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:text="Remote"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
+
+            <!-- B 画面：默认承载己方视频，点击容器后和 A 画面的内容互换。 -->
+            <FrameLayout
+                android:id="@+id/secondaryVideoContainer"
+                android:layout_width="128dp"
+                android:layout_height="184dp"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="16dp"
+                android:background="@android:color/black"
+                android:clickable="true"
+                android:focusable="true">
+
+                <org.webrtc.SurfaceViewRenderer
+                    android:id="@+id/wSecondaryRenderer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/secondaryLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|top"
+                    android:layout_margin="8dp"
+                    android:background="#66000000"
+                    android:paddingStart="6dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="6dp"
+                    android:paddingBottom="3dp"
+                    android:text="Local"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp" />
+            </FrameLayout>
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

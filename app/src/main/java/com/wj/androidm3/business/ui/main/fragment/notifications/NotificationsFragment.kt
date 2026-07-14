@@ -6,14 +6,11 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import com.wj.androidm3.R
 import com.wj.androidm3.databinding.FragmentNotificationsBinding
+import com.wj.basecomponent.ui.BaseMVVMFragment
 import com.wj.basecomponent.util.log.WJLog
 import com.wj.basecomponent.util.permission.canDrawOverlays
 import com.wj.basecomponent.view.TimeBean
@@ -21,13 +18,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class NotificationsFragment : Fragment() {
+class NotificationsFragment : BaseMVVMFragment<NotificationsViewModel, FragmentNotificationsBinding>() {
 
-    private var _binding: FragmentNotificationsBinding? = null
+    private val binding: FragmentNotificationsBinding
+        get() = requireNotNull(mViewBinding)
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    override fun enableCacheView() = false
 
     private val requestDrawOverlays = registerForActivityResult(object : ActivityResultContract<Unit, Unit>() {
         override fun createIntent(context: Context, input: Unit): Intent {
@@ -42,26 +38,18 @@ class NotificationsFragment : Fragment() {
         WJLog.i("onActivityResultCallback -> invoke")
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this)[NotificationsViewModel::class.java]
-
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
+    override fun getLayoutId(): Int {
+        return R.layout.fragment_notifications
     }
+
+    override fun firstCreateView() = Unit
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val textView = binding.textNotifications
+        mViewModel.text.observe(viewLifecycleOwner) {
+            textView.text = it
+        }
         setDrawOverlays()
         testTimeRuler()
     }
@@ -101,10 +89,5 @@ class NotificationsFragment : Fragment() {
             WJLog.d("onTimeSelected -> $time -> ${simpleDateFormat.format(time)}")
         }
         binding.timeRuler.setCurrentTime(System.currentTimeMillis())
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
