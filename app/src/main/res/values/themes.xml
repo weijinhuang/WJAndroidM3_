@@ -18,6 +18,19 @@
 
 
     <style name="MyTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge"/>
+    <style name="Theme.WJAndroidM3.VideoEditor" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:navigationBarColor">#080A0F</item>
+        <item name="android:statusBarColor">#080A0F</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+    <style name="Theme.WJAndroidM3.CountdownDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:windowMinWidthMajor">88%</item>
+        <item name="android:windowMinWidthMinor">88%</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
     <declare-styleable name="SpannedGridLayoutManager">
         <attr name="android:orientation" />
         <attr name="spanCount" />

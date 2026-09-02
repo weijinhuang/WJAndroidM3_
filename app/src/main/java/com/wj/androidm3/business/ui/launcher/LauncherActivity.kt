@@ -4,7 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
+import android.provider.Settings
 import com.wj.androidm3.R
+import com.wj.androidm3.business.countdown.data.CountdownPreferences
+import com.wj.androidm3.business.countdown.overlay.CountdownOverlayService
 import com.wj.androidm3.databinding.ActivityLauncherBinding
 import com.wj.androidm3.business.ui.main.MainActivity
 import com.wj.basecomponent.ui.BaseMVVMActivity
@@ -20,6 +23,10 @@ class LauncherActivity : BaseMVVMActivity<LauncherViewModel, ActivityLauncherBin
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewBinding?.viewModel = mViewModel
+        val countdownPreferences = CountdownPreferences(this)
+        if (countdownPreferences.assistantEnabled && Settings.canDrawOverlays(this)) {
+            CountdownOverlayService.start(this)
+        }
         startBackgroundAnimation()
 
     }

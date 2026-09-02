@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 局域网 socket 也属于网络访问；没有 INTERNET 权限，TCP 信令连接无法建立。 -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- Request legacy Bluetooth permissions on older devices. -->
     <uses-permission android:name="android.permission.BLUETOOTH"
@@ -47,6 +51,15 @@
             android:exported="false"
             android:label="@string/title_activity_bottom_navigation" />
         <activity
+            android:name=".business.countdown.ui.AddCountdownActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:theme="@style/Theme.WJAndroidM3.CountdownDialog" />
+        <activity
+            android:name=".business.countdown.ui.CountdownListActivity"
+            android:exported="false"
+            android:theme="@style/MyTheme" />
+        <activity
             android:name=".business.ui.tabact.TabActivity"
             android:exported="false"
             android:label="@string/title_activity_tab"
@@ -64,6 +77,15 @@
             android:name=".business.services.BackgroundService"
             android:enabled="true"
             android:exported="false" />
+        <service
+            android:name=".business.countdown.overlay.CountdownOverlayService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".business.countdown.screenshot.CountdownScreenshotService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
         <service android:name=".business.services.AIDLService" />
         <service
             android:name=".business.services.WJFCMService"
@@ -82,6 +104,12 @@
             android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:theme="@style/MyTheme" />
+        <activity
+            android:name=".business.ui.videoeditor.VideoEditorActivity"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.WJAndroidM3.VideoEditor" />
         <!-- 当前 MainActivity/MediaActivity 显式关闭了硬件加速。
              WebRTC 的 SurfaceViewRenderer 使用 EGL/OpenGL 渲染视频帧，
              独立 Activity 开启硬件加速可以避免和旧页面配置互相影响。 -->

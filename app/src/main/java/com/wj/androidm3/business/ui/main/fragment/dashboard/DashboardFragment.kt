@@ -9,6 +9,7 @@ import android.location.*
 import android.os.Environment
 import android.text.TextUtils
 import android.view.WindowManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.GoogleApiAvailability
@@ -29,6 +30,7 @@ import com.wj.androidm3.business.ui.main.fragment.ViewPager2NestedActivity2
 import com.wj.androidm3.business.ui.media.MediaActivity
 import com.wj.androidm3.business.ui.tabact.TabActivity
 import com.wj.androidm3.business.ui.test.TestBindingAdapterActivity
+import com.wj.androidm3.business.ui.videoeditor.VideoEditorActivity
 import com.wj.androidm3.databinding.FragmentDashboardBinding
 import com.wj.basecomponent.ui.BaseMVVMFragment
 import com.wj.basecomponent.util.log.WJLog
@@ -45,12 +47,30 @@ import java.util.*
 
 class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboardBinding>() {
 
+    /**
+     * OpenDocument 会把选择范围交给系统文档/相册应用；传入“全部视频”MIME 后图片不会出现在
+     * 可选结果中。使用可持久化 URI 授权，编辑 Activity 重建后仍能读取源视频。
+     */
+    private val pickVideo = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri ?: return@registerForActivityResult // 用户取消时保持当前页面，不产生任何副作用。
+        runCatching {
+            requireContext().contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+        }
+        startActivity(VideoEditorActivity.createIntent(requireContext(), uri))
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private val mFunctionList = listOf(
+    private val mFunctionList by lazy { listOf(
+        FunctionBean(getString(R.string.video_editor_entry)) {
+            pickVideo.launch(arrayOf("video/*"))
+        },
         FunctionBean("LAN Video Chat") {
             // WebRTC 渲染页需要独立开启硬件加速，所以这里启动单独的 Activity。
             requireActivity().startActivity(Intent(requireActivity(), LanVideoCallActivity::class.java))
@@ -233,7 +253,7 @@ class DashboardFragment : BaseMVVMFragment<DashboardViewModel, FragmentDashboard
         FunctionBean("TestBindingAdapter") {
             startActivity(Intent(requireActivity(), TestBindingAdapterActivity::class.java))
         },
-    )
+    ) }
 
     private fun testJni(){
         val helper = WJMediaJNIHepler()
